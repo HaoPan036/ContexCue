@@ -1,0 +1,169 @@
+export type SourceType =
+  | "private_chat"
+  | "group_chat"
+  | "ai_feedback"
+  | "new_message";
+
+export type MemoryType =
+  | "preference"
+  | "temporary_health_context"
+  | "emotional_context"
+  | "commitment"
+  | "relationship_signal"
+  | "user_reply_style";
+
+export type Sensitivity = "low" | "medium" | "high";
+
+export type SuggestedAction =
+  | "save_long_term"
+  | "save_short_term"
+  | "require_confirmation"
+  | "block"
+  | "ignore";
+
+export type PrivacyLevel = "normal" | "sensitive" | "private";
+
+export type MemoryStatus =
+  | "active"
+  | "expired"
+  | "ignored"
+  | "blocked"
+  | "pending_confirmation";
+
+export type GateDecision =
+  | "allow_long_term"
+  | "allow_short_term"
+  | "require_user_confirmation"
+  | "block"
+  | "ignore";
+
+export type ReplyStyle =
+  | "warm_supportive_low_pressure"
+  | "task_oriented"
+  | "intrusive_interrogation";
+
+export type EvaluationStatus = "pass" | "fail";
+
+export interface Person {
+  id: string;
+  displayName: string;
+  relationshipLabel: string;
+  notes: string;
+}
+
+export interface SourceSnippet {
+  id: string;
+  sourceType: SourceType;
+  personIds: string[];
+  timestamp: string;
+  title: string;
+  content: string;
+  tags: string[];
+}
+
+export interface MemoryCandidate {
+  id: string;
+  personId: string;
+  type: MemoryType;
+  content: string;
+  sourceSnippetIds: string[];
+  evidence: string;
+  sensitivity: Sensitivity;
+  suggestedTtlDays: number | null;
+  needsUserConfirmation: boolean;
+  suggestedAction: SuggestedAction;
+}
+
+export interface MemoryRecord {
+  id: string;
+  personId: string;
+  type: MemoryType;
+  content: string;
+  evidence: string;
+  sourceSnippetIds: string[];
+  createdAt: string;
+  expiresAt: string | null;
+  privacyLevel: PrivacyLevel;
+  status: MemoryStatus;
+  allowedTaskTypes: string[];
+  blockedTaskTypes: string[];
+}
+
+export interface MemoryGateDecision {
+  memoryCandidateId: string;
+  decision: GateDecision;
+  reason: string;
+  ttlDays: number | null;
+  requiresConfirmation: boolean;
+  rawChatStored: boolean;
+}
+
+export interface StitchedContextLine {
+  id: string;
+  text: string;
+  evidenceSourceIds: string[];
+  caution?: string;
+}
+
+export interface AgentRun {
+  id: string;
+  inputSourceIds: string[];
+  selectedMemoryIds: string[];
+  blockedMemoryIds: string[];
+  stitchedContext: StitchedContextLine[];
+  replyStrategy: string;
+  generatedReplyOptions: string[];
+  evidenceMap: Record<string, string[]>;
+  createdAt: string;
+}
+
+export interface ReplyOption {
+  id: string;
+  label: string;
+  style: ReplyStyle;
+  text: string;
+  rationale: string;
+  usedMemoryIds: string[];
+}
+
+export interface FeedbackEvent {
+  id: string;
+  selectedReplyOptionId: string;
+  editedText: string;
+  selectedStyle: ReplyStyle;
+  rejectedStyles: ReplyStyle[];
+  personId: string;
+  createdAt: string;
+  learnedPreference: string;
+}
+
+export interface UserStyleProfile {
+  id: string;
+  personId: string;
+  preferredStyles: ReplyStyle[];
+  rejectedStyles: ReplyStyle[];
+  notes: string;
+  updatedAt: string;
+}
+
+export interface EvaluationCase {
+  id: string;
+  category: string;
+  testName: string;
+  inputCondition: string;
+  expectedBehavior: string;
+  currentResult: string;
+  status: EvaluationStatus;
+}
+
+export interface DemoData {
+  persons: Person[];
+  sourceSnippets: SourceSnippet[];
+  memoryCandidates: MemoryCandidate[];
+  memoryRecords: MemoryRecord[];
+  memoryGateDecisions: MemoryGateDecision[];
+  agentRun: AgentRun;
+  replyOptions: ReplyOption[];
+  styleProfileSeed: UserStyleProfile;
+  evaluationCases: EvaluationCase[];
+}

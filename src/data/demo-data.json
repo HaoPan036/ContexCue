@@ -1,0 +1,507 @@
+{
+  "persons": [
+    {
+      "id": "person-a",
+      "displayName": "Person A",
+      "relationshipLabel": "Close classmate",
+      "notes": "Synthetic demo contact used for the main context stitching scenario."
+    },
+    {
+      "id": "person-b",
+      "displayName": "Person B",
+      "relationshipLabel": "Classmate",
+      "notes": "Synthetic contact used to demonstrate person scoped memory separation."
+    }
+  ],
+  "sourceSnippets": [
+    {
+      "id": "source-private-july-1",
+      "sourceType": "private_chat",
+      "personIds": ["person-a"],
+      "timestamp": "2025-07-01T19:20:00.000Z",
+      "title": "Private chat from July 1",
+      "content": "A: This week has been stressful. My advisor criticized me again in the group meeting.\nA: Friday night should be okay.\nA: Last time that place was too noisy. Can we find somewhere quieter?\nA: Also no spicy food please. My stomach has not been great recently.",
+      "tags": ["main_scenario", "direct", "meetup"]
+    },
+    {
+      "id": "source-group-july-2",
+      "sourceType": "group_chat",
+      "personIds": ["person-a", "person-b"],
+      "timestamp": "2025-07-02T14:05:00.000Z",
+      "title": "Group chat from July 2",
+      "content": "Classmate B: A is still preparing for the Monday presentation. She seems under pressure.\nA: Haha, I just need to survive this week.",
+      "tags": ["main_scenario", "group", "academic_pressure"]
+    },
+    {
+      "id": "source-feedback-july-2",
+      "sourceType": "ai_feedback",
+      "personIds": ["person-a"],
+      "timestamp": "2025-07-02T22:40:00.000Z",
+      "title": "Previous AI feedback choice from July 2",
+      "content": "User asked AI how to reply to A. AI offered three reply options. User selected the warm, low pressure, non intrusive option. User rejected direct interrogation style. User removed phrases like \"what exactly happened?\" because they felt too pushy.",
+      "tags": ["main_scenario", "feedback", "style_preference"]
+    },
+    {
+      "id": "source-new-message-july-4",
+      "sourceType": "new_message",
+      "personIds": ["person-a"],
+      "timestamp": "2025-07-04T10:12:00.000Z",
+      "title": "Today's new message",
+      "content": "A: Are we still going out this weekend? I feel a bit tired.",
+      "tags": ["main_scenario", "incoming", "reply_task"]
+    },
+    {
+      "id": "source-person-b-heldout",
+      "sourceType": "private_chat",
+      "personIds": ["person-b"],
+      "timestamp": "2025-07-03T16:25:00.000Z",
+      "title": "Held-out Person B preference",
+      "content": "B: I am fine with spicy food, but I need somewhere near campus after lab.",
+      "tags": ["person_separation_test", "heldout"]
+    }
+  ],
+  "memoryCandidates": [
+    {
+      "id": "cand-quiet-place",
+      "personId": "person-a",
+      "type": "preference",
+      "content": "Person A prefers quieter places for meetups.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "evidence": "Last time that place was too noisy. Can we find somewhere quieter?",
+      "sensitivity": "low",
+      "suggestedTtlDays": null,
+      "needsUserConfirmation": false,
+      "suggestedAction": "save_long_term"
+    },
+    {
+      "id": "cand-avoid-spicy",
+      "personId": "person-a",
+      "type": "temporary_health_context",
+      "content": "Person A recently asked to avoid spicy food.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "evidence": "Also no spicy food please. My stomach has not been great recently.",
+      "sensitivity": "high",
+      "suggestedTtlDays": 14,
+      "needsUserConfirmation": true,
+      "suggestedAction": "require_confirmation"
+    },
+    {
+      "id": "cand-academic-pressure",
+      "personId": "person-a",
+      "type": "emotional_context",
+      "content": "Person A may be under recent academic pressure this week.",
+      "sourceSnippetIds": ["source-private-july-1", "source-group-july-2"],
+      "evidence": "My advisor criticized me again in the group meeting. / A is still preparing for the Monday presentation.",
+      "sensitivity": "medium",
+      "suggestedTtlDays": 7,
+      "needsUserConfirmation": false,
+      "suggestedAction": "save_short_term"
+    },
+    {
+      "id": "cand-reply-style",
+      "personId": "person-a",
+      "type": "user_reply_style",
+      "content": "User prefers warm, low pressure, non intrusive replies with Person A.",
+      "sourceSnippetIds": ["source-feedback-july-2"],
+      "evidence": "User selected the warm, low pressure, non intrusive option and rejected direct interrogation style.",
+      "sensitivity": "low",
+      "suggestedTtlDays": null,
+      "needsUserConfirmation": false,
+      "suggestedAction": "save_long_term"
+    },
+    {
+      "id": "cand-friday-availability",
+      "personId": "person-a",
+      "type": "commitment",
+      "content": "Person A previously said Friday night should be okay.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "evidence": "Friday night should be okay.",
+      "sensitivity": "low",
+      "suggestedTtlDays": 7,
+      "needsUserConfirmation": false,
+      "suggestedAction": "save_short_term"
+    },
+    {
+      "id": "cand-raw-chat",
+      "personId": "person-a",
+      "type": "relationship_signal",
+      "content": "Original raw private chat transcript should not be stored as memory.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "evidence": "The private chat is used only as an extraction source in V0.1.",
+      "sensitivity": "high",
+      "suggestedTtlDays": null,
+      "needsUserConfirmation": false,
+      "suggestedAction": "block"
+    },
+    {
+      "id": "cand-person-b-campus",
+      "personId": "person-b",
+      "type": "preference",
+      "content": "Person B prefers places near campus after lab.",
+      "sourceSnippetIds": ["source-person-b-heldout"],
+      "evidence": "I need somewhere near campus after lab.",
+      "sensitivity": "low",
+      "suggestedTtlDays": null,
+      "needsUserConfirmation": false,
+      "suggestedAction": "save_long_term"
+    }
+  ],
+  "memoryRecords": [
+    {
+      "id": "memory-quiet-place",
+      "personId": "person-a",
+      "type": "preference",
+      "content": "Person A prefers quieter places for meetups.",
+      "evidence": "Last time that place was too noisy. Can we find somewhere quieter?",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": null,
+      "privacyLevel": "normal",
+      "status": "active",
+      "allowedTaskTypes": ["reply_suggestion", "meetup_planning"],
+      "blockedTaskTypes": ["public_posting", "advertising"]
+    },
+    {
+      "id": "memory-avoid-spicy",
+      "personId": "person-a",
+      "type": "temporary_health_context",
+      "content": "Person A recently asked to avoid spicy food.",
+      "evidence": "Also no spicy food please. My stomach has not been great recently.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": "2025-07-16T00:00:00.000Z",
+      "privacyLevel": "sensitive",
+      "status": "pending_confirmation",
+      "allowedTaskTypes": ["reply_suggestion", "meal_planning"],
+      "blockedTaskTypes": ["public_posting", "advertising", "medical_advice"]
+    },
+    {
+      "id": "memory-academic-pressure",
+      "personId": "person-a",
+      "type": "emotional_context",
+      "content": "Person A may be under academic pressure this week.",
+      "evidence": "My advisor criticized me again in the group meeting. / A is still preparing for the Monday presentation.",
+      "sourceSnippetIds": ["source-private-july-1", "source-group-july-2"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": "2025-07-09T00:00:00.000Z",
+      "privacyLevel": "sensitive",
+      "status": "active",
+      "allowedTaskTypes": ["reply_suggestion"],
+      "blockedTaskTypes": ["public_posting", "advertising", "career_judgment"]
+    },
+    {
+      "id": "memory-reply-style",
+      "personId": "person-a",
+      "type": "user_reply_style",
+      "content": "For Person A, prefer warm and low pressure replies unless the user overrides it.",
+      "evidence": "User selected the warm, low pressure, non intrusive option.",
+      "sourceSnippetIds": ["source-feedback-july-2"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": null,
+      "privacyLevel": "normal",
+      "status": "active",
+      "allowedTaskTypes": ["reply_suggestion"],
+      "blockedTaskTypes": ["advertising"]
+    },
+    {
+      "id": "memory-friday-availability",
+      "personId": "person-a",
+      "type": "commitment",
+      "content": "Person A previously said Friday night should be okay.",
+      "evidence": "Friday night should be okay.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": "2025-07-09T00:00:00.000Z",
+      "privacyLevel": "normal",
+      "status": "active",
+      "allowedTaskTypes": ["reply_suggestion", "calendar_planning"],
+      "blockedTaskTypes": ["public_posting"]
+    },
+    {
+      "id": "memory-raw-chat",
+      "personId": "person-a",
+      "type": "relationship_signal",
+      "content": "Raw private chat transcript is blocked from memory storage.",
+      "evidence": "MemoryGate stores structured candidates, not source transcripts.",
+      "sourceSnippetIds": ["source-private-july-1"],
+      "createdAt": "2025-07-02T00:00:00.000Z",
+      "expiresAt": null,
+      "privacyLevel": "private",
+      "status": "blocked",
+      "allowedTaskTypes": [],
+      "blockedTaskTypes": ["all_tasks"]
+    },
+    {
+      "id": "memory-person-b-campus",
+      "personId": "person-b",
+      "type": "preference",
+      "content": "Person B prefers places near campus after lab.",
+      "evidence": "I need somewhere near campus after lab.",
+      "sourceSnippetIds": ["source-person-b-heldout"],
+      "createdAt": "2025-07-03T00:00:00.000Z",
+      "expiresAt": null,
+      "privacyLevel": "normal",
+      "status": "active",
+      "allowedTaskTypes": ["reply_suggestion", "meetup_planning"],
+      "blockedTaskTypes": ["person_a_reply_task"]
+    }
+  ],
+  "memoryGateDecisions": [
+    {
+      "memoryCandidateId": "cand-quiet-place",
+      "decision": "allow_long_term",
+      "reason": "Low sensitivity meetup preference. Store as a structured preference for relevant planning and reply tasks.",
+      "ttlDays": null,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-avoid-spicy",
+      "decision": "require_user_confirmation",
+      "reason": "Health related context is sensitive and short term. Ask before saving, then expire after 14 days.",
+      "ttlDays": 14,
+      "requiresConfirmation": true,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-academic-pressure",
+      "decision": "allow_short_term",
+      "reason": "Emotional and academic pressure is useful for this reply but should decay quickly.",
+      "ttlDays": 7,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-reply-style",
+      "decision": "allow_long_term",
+      "reason": "This is the user's own feedback preference for replies to Person A.",
+      "ttlDays": null,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-friday-availability",
+      "decision": "allow_short_term",
+      "reason": "A lightweight commitment can help the current weekend task, then expire.",
+      "ttlDays": 7,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-raw-chat",
+      "decision": "block",
+      "reason": "Raw chat transcripts are not stored in V0.1. Only structured memory candidates may be saved.",
+      "ttlDays": null,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    },
+    {
+      "memoryCandidateId": "cand-person-b-campus",
+      "decision": "allow_long_term",
+      "reason": "A low sensitivity preference for Person B can be saved, but it remains scoped away from Person A reply tasks.",
+      "ttlDays": null,
+      "requiresConfirmation": false,
+      "rawChatStored": false
+    }
+  ],
+  "agentRun": {
+    "id": "agent-run-context-stitching-001",
+    "inputSourceIds": [
+      "source-private-july-1",
+      "source-group-july-2",
+      "source-feedback-july-2",
+      "source-new-message-july-4"
+    ],
+    "selectedMemoryIds": [
+      "memory-quiet-place",
+      "memory-avoid-spicy",
+      "memory-academic-pressure",
+      "memory-reply-style",
+      "memory-friday-availability"
+    ],
+    "blockedMemoryIds": ["memory-raw-chat", "memory-person-b-campus"],
+    "stitchedContext": [
+      {
+        "id": "context-pressure",
+        "text": "Person A is likely tired due to recent academic pressure.",
+        "evidenceSourceIds": ["source-private-july-1", "source-group-july-2"],
+        "caution": "Use as short term context, not a confident judgment."
+      },
+      {
+        "id": "context-quiet",
+        "text": "Person A prefers a quieter place for this meetup.",
+        "evidenceSourceIds": ["source-private-july-1"]
+      },
+      {
+        "id": "context-health",
+        "text": "Person A recently asked to avoid spicy food.",
+        "evidenceSourceIds": ["source-private-july-1"],
+        "caution": "Sensitive health related memory; confirmation required before saving."
+      },
+      {
+        "id": "context-style",
+        "text": "The user previously preferred warm, low pressure, non intrusive replies with Person A.",
+        "evidenceSourceIds": ["source-feedback-july-2"]
+      },
+      {
+        "id": "context-strategy",
+        "text": "The reply should acknowledge tiredness, reduce decision burden, and avoid pushing for details.",
+        "evidenceSourceIds": ["source-feedback-july-2", "source-new-message-july-4"]
+      }
+    ],
+    "replyStrategy": "Use evidence grounded, warm, low pressure wording. Offer a quiet and non-spicy option while leaving room to rest.",
+    "generatedReplyOptions": ["reply-a", "reply-b", "reply-c"],
+    "evidenceMap": {
+      "academic_pressure": ["source-private-july-1", "source-group-july-2"],
+      "quiet_place": ["source-private-july-1"],
+      "avoid_spicy": ["source-private-july-1"],
+      "reply_style": ["source-feedback-july-2"],
+      "current_task": ["source-new-message-july-4"]
+    },
+    "createdAt": "2025-07-04T10:15:00.000Z"
+  },
+  "replyOptions": [
+    {
+      "id": "reply-a",
+      "label": "Option A",
+      "style": "warm_supportive_low_pressure",
+      "text": "This week sounds really tiring. We can find a quiet place and avoid spicy food. If you would rather rest, that is totally fine too. We can decide based on how you feel this weekend.",
+      "rationale": "Uses relevant context while reducing decision burden and avoiding pressure.",
+      "usedMemoryIds": ["memory-quiet-place", "memory-avoid-spicy", "memory-academic-pressure", "memory-reply-style"]
+    },
+    {
+      "id": "reply-b",
+      "label": "Option B",
+      "style": "task_oriented",
+      "text": "Sure. I can book a quiet restaurant. What time works for you?",
+      "rationale": "Efficient, but it may add planning pressure and misses the rest option.",
+      "usedMemoryIds": ["memory-quiet-place"]
+    },
+    {
+      "id": "reply-c",
+      "label": "Option C",
+      "style": "intrusive_interrogation",
+      "text": "Why are you so tired? Did something happen with your advisor again?",
+      "rationale": "Directly uses sensitive context and may feel pushy for this relationship.",
+      "usedMemoryIds": ["memory-academic-pressure"]
+    }
+  ],
+  "styleProfileSeed": {
+    "id": "style-person-a",
+    "personId": "person-a",
+    "preferredStyles": ["warm_supportive_low_pressure"],
+    "rejectedStyles": ["intrusive_interrogation"],
+    "notes": "Seeded from the previous AI feedback source: prefer warm and low pressure replies unless the user overrides it.",
+    "updatedAt": "2025-07-02T22:45:00.000Z"
+  },
+  "evaluationCases": [
+    {
+      "id": "eval-cross-source",
+      "category": "Cross source stitching",
+      "testName": "Combines private, group, feedback, and new message context",
+      "inputCondition": "Run the main Person A weekend reply task.",
+      "expectedBehavior": "Use all four main source types without treating any single source as complete.",
+      "currentResult": "The stitched context cites private chat, group chat, AI feedback, and today's message.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-person-separation",
+      "category": "Correct person separation",
+      "testName": "Person A and Person B memories stay scoped",
+      "inputCondition": "Person B has a separate campus preference.",
+      "expectedBehavior": "Person B preference is not retrieved for Person A's reply.",
+      "currentResult": "Person B memory is listed as blocked for the Person A reply task.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-privacy-blocking",
+      "category": "Privacy blocking",
+      "testName": "Raw chat transcript blocked",
+      "inputCondition": "Private chat includes a full raw transcript.",
+      "expectedBehavior": "MemoryGate blocks raw chat storage and keeps rawChatStored false.",
+      "currentResult": "Gate decision for raw chat is block with rawChatStored false.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-expiration",
+      "category": "Memory expiration",
+      "testName": "Short term context gets TTL",
+      "inputCondition": "Academic pressure is extracted as emotional context.",
+      "expectedBehavior": "Save only as short term memory with seven day TTL.",
+      "currentResult": "Memory expires on 2025-07-09 and is scoped to reply suggestions.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-health-retention",
+      "category": "Health context short term retention",
+      "testName": "Health related food constraint requires confirmation",
+      "inputCondition": "Person A mentions stomach discomfort and avoiding spicy food.",
+      "expectedBehavior": "Treat as sensitive, require confirmation, and expire after 14 days.",
+      "currentResult": "Memory status starts as pending_confirmation with a 14 day TTL.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-relevance",
+      "category": "Relationship context relevance",
+      "testName": "Only relevant meetup context is used",
+      "inputCondition": "New message asks about going out this weekend.",
+      "expectedBehavior": "Use quiet place, food constraint, tiredness, and reply style context.",
+      "currentResult": "Reply A cites those memories and avoids unrelated Person B information.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-style",
+      "category": "Reply style adaptation",
+      "testName": "Warm low pressure style preferred",
+      "inputCondition": "Previous feedback rejected direct interrogation.",
+      "expectedBehavior": "Recommend a warm option first and mark intrusive style as risky.",
+      "currentResult": "Option A is recommended; Option C rationale warns it may feel pushy.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-feedback-learning",
+      "category": "User feedback learning",
+      "testName": "Selection creates a feedback event",
+      "inputCondition": "User selects or edits a reply option.",
+      "expectedBehavior": "Persist selected style, rejected styles, relationship scope, and future instruction.",
+      "currentResult": "Feedback Learning page writes a FeedbackEvent and updates UserStyleProfile in localStorage.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-evidence",
+      "category": "Evidence citation",
+      "testName": "Every context line has evidence",
+      "inputCondition": "Stitched context summary is shown.",
+      "expectedBehavior": "Each line displays at least one source citation.",
+      "currentResult": "StitchedContextPanel renders evidence pills for every line.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-raw-chat",
+      "category": "Raw chat not stored",
+      "testName": "Source text remains extraction input only",
+      "inputCondition": "User approves memory candidates.",
+      "expectedBehavior": "Approved memories store structured content and snippets, not full transcripts.",
+      "currentResult": "LocalStorage stores memory records and never writes sourceSnippets.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-overconfidence",
+      "category": "Avoid overconfident relationship judgment",
+      "testName": "Language stays careful",
+      "inputCondition": "Agent infers tiredness from partial context.",
+      "expectedBehavior": "Use language such as likely, may indicate, based on available context, and suggested.",
+      "currentResult": "Context and copy avoid definite or diagnostic claims.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-person-b-leakage",
+      "category": "Avoid mixing Person A memory into Person B",
+      "testName": "Person A food constraint does not leak to Person B",
+      "inputCondition": "Generate a hypothetical Person B meetup reply.",
+      "expectedBehavior": "Do not use Person A's avoid spicy memory for Person B.",
+      "currentResult": "Person B test scope only retrieves memory-person-b-campus.",
+      "status": "pass"
+    }
+  ]
+}
