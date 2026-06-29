@@ -77,3 +77,22 @@ Source snippets are extraction inputs. V0.1 does not persist raw snippets into d
 - `rejectedStyles`
 - `notes`
 - `updatedAt`
+
+## VoiceTriggerExample schema
+
+- `id`
+- `transcript`
+- `parsedIntent`: `remember_preference`, `save_sensitive_short_term`, `block_last_conversation`, `update_reply_style`, or `correct_reply_framing`
+- `extractedMemoryCandidate`
+- `memoryType`
+- `sensitivity`
+- `memoryGateDecision`
+- `confirmationRequired`
+- `ttlDays`
+- `rawAudioStored`
+- `transcriptStored`
+- `nextReplyChange`
+- `privacyReason`
+- `toneMetadataNote`
+
+V0.1 voice examples are simulated transcripts. `rawAudioStored` and `transcriptStored` should remain `false`.

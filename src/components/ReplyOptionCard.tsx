@@ -40,7 +40,10 @@ export function ReplyOptionCard({
       <p className="rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-800">
         {reply.text}
       </p>
-      <p className="text-xs leading-5 text-slate-500">{reply.rationale}</p>
+      <details className="group text-xs text-slate-500">
+        <summary className="cursor-pointer font-semibold group-open:text-indigo-700">Rationale</summary>
+        <p className="mt-1 leading-5">{reply.rationale}</p>
+      </details>
 
       {onSelect ? (
         <button

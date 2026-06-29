@@ -2,7 +2,7 @@
 
 ## What is ContextCue
 
-ContextCue is a portfolio-ready local demo of a social context agent with privacy controlled memory.
+ContextCue is a local context workspace for a social context agent with privacy controlled memory.
 
 It is not a social media replacement, chat client, dating advice app, or daily journal. It is a context layer on top of existing social workflows: it observes scattered fragments, extracts structured memory candidates, applies privacy rules, and helps draft better replies while keeping the user in control.
 
@@ -10,7 +10,7 @@ It is not a social media replacement, chat client, dating advice app, or daily j
 
 The hard problem is not generating a pleasant message. The hard problem is deciding which fragments matter across time, chats, group contexts, and previous AI feedback choices.
 
-ContextCue demonstrates AI-shaped context stitching:
+ContextCue centers on AI-shaped context stitching:
 
 - Collect low-signal fragments from multiple sources.
 - Separate people and task scopes.
@@ -19,9 +19,9 @@ ContextCue demonstrates AI-shaped context stitching:
 - Cite evidence for each recommendation.
 - Learn from the reply the user actually chooses.
 
-## Demo scenario
+## Case file
 
-The synthetic scenario centers on Person A:
+The synthetic case centers on Person A:
 
 - July 1 private chat: Person A mentions stress, a Friday meetup, a quieter place, and avoiding spicy food.
 - July 2 group chat: classmates mention Person A is preparing for a Monday presentation.
@@ -41,6 +41,12 @@ This week sounds really tiring. We can find a quiet place and avoid spicy food. 
 3. Gate: apply MemoryGate privacy and expiry rules.
 4. Stitch: produce current relationship context with evidence.
 5. Recommend and Learn: show reply options and update the style profile from the user's choice.
+
+## Voice Trigger Capture
+
+V0.1 includes a simulated Voice Trigger Capture module. Voice is not used as a voice assistant. The phrase "Hi Jarvis" marks an intentional memory capture instruction: remember, correct, block, expire, or update a future reply preference.
+
+The workspace uses fixed transcripts instead of real microphone input. It shows each transcript, parsed intent, extracted candidate, MemoryGate decision, confirmation requirement, audio/transcript storage status, and how the instruction changes the next reply.
 
 ## MemoryGate design
 
@@ -72,19 +78,22 @@ Synthetic data lives in `src/data/demo-data.json`.
 
 ## Privacy assumptions
 
-- The app uses synthetic demo data only.
+- The app uses synthetic data only.
 - No login, real messaging integration, backend, cloud sync, or external database is included.
-- V0.1 stores optional demo state in browser `localStorage`.
+- V0.1 stores optional local state in browser `localStorage`.
 - `localStorage` is limited to memory records, the selected reply option, feedback event, and user style profile.
 - Raw source snippets are not persisted by the demo state.
+- Raw audio is never stored in V0.1.
+- Voice transcripts are used only for extraction and are not stored as reusable memory.
 - Sensitive health context requires confirmation and expires.
 - Emotional context is short term.
+- Tone or prosody can only be used as low confidence metadata and must not be used for diagnosis or strong emotional claims.
 - Memories are scoped by person and task.
 - The app avoids confident psychological claims and uses careful language such as "likely" and "may indicate."
 
-## Evaluation
+## System tests
 
-The Evaluation page contains 12 static V0.1 test cases:
+The Tests page contains 16 static V0.1 cases:
 
 - Cross source stitching
 - Correct person separation

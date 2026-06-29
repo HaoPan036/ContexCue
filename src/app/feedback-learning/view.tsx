@@ -38,10 +38,9 @@ export function FeedbackLearning() {
           <PrivacyBadge value="normal" label="Scoped to Person A" />
           <PrivacyBadge value="mock" label="Browser localStorage" />
         </div>
-        <h1 className="text-3xl font-semibold leading-tight text-slate-950">Feedback Learning</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          User choices become scoped preference signals. The profile changes only after the user
-          selects or edits a final reply.
+        <h1 className="text-3xl font-semibold leading-tight text-slate-950">Reply Preferences</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          The selected reply updates a scoped style profile.
         </p>
       </div>
 
@@ -60,8 +59,8 @@ export function FeedbackLearning() {
           </div>
 
           <section className="card-shell p-4">
-            <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Optional edit</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-950">Final user-controlled text</h2>
+            <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Edit before saving</p>
+            <h2 className="mt-1 text-lg font-semibold text-slate-950">Final reply text</h2>
             <textarea
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
@@ -82,7 +81,7 @@ export function FeedbackLearning() {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <FeedbackEventCard event={feedbackEvent} profile={styleProfile} />
           <section className="card-shell p-4">
-            <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Example fields</p>
+            <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Saved fields</p>
             <pre className="mt-3 overflow-auto rounded-md border border-slate-100 bg-slate-50 p-3 text-xs leading-5 text-slate-700">
 {`selected_style
 rejected_styles

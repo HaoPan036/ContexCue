@@ -13,13 +13,12 @@ export function MemoryLibrary() {
       <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.42fr)] lg:items-end">
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
-            <PrivacyBadge value="mock" label="Local JSON demo data" />
-            <PrivacyBadge value="sensitive" label="User confirmation controls" />
+            <PrivacyBadge value="mock" label="Local case file" />
+            <PrivacyBadge value="sensitive" label="Confirmation controls" />
           </div>
-          <h1 className="text-3xl font-semibold leading-tight text-slate-950">Memory Library</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Structured memories after extraction and confirmation. Each card keeps person scope,
-            evidence, privacy level, TTL, status, allowed domains, and blocked domains visible.
+          <h1 className="text-3xl font-semibold leading-tight text-slate-950">Memory Records</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            Structured memory with scope, evidence, TTL, and user controls.
           </p>
         </div>
 
@@ -29,10 +28,9 @@ export function MemoryLibrary() {
               <ShieldCheck className="h-4 w-4" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">V0.1 storage</p>
+              <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Storage boundary</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                localStorage only saves memory records, selected reply, feedback event, and style
-                profile. It does not persist raw source snippets.
+                localStorage saves structured records and choices. Raw source snippets stay out.
               </p>
             </div>
           </div>
@@ -41,7 +39,7 @@ export function MemoryLibrary() {
 
       <div className="mb-4 flex items-center gap-2">
         <Database className="h-5 w-5 text-indigo-600" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-950">{memoryRecords.length} memory records</h2>
+        <h2 className="text-lg font-semibold text-slate-950">{memoryRecords.length} records</h2>
       </div>
 
       <div className="grid gap-4">

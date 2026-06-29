@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrainCircuit, Database, FlaskConical, MessageSquareText, RotateCcw, ShieldCheck } from "lucide-react";
+import { BrainCircuit, Database, FlaskConical, MessageSquareText, Mic2, RotateCcw, ShieldCheck } from "lucide-react";
 import { clearDemoStorage } from "@/lib/storage";
 
 const navItems = [
-  { href: "/demo", label: "Demo", icon: MessageSquareText },
-  { href: "/memory-library", label: "Memory", icon: Database },
-  { href: "/feedback-learning", label: "Feedback", icon: ShieldCheck },
-  { href: "/evaluation", label: "Evaluation", icon: FlaskConical }
+  { href: "/", label: "Workspace", icon: MessageSquareText },
+  { href: "/memory-library", label: "Library", icon: Database },
+  { href: "/feedback-learning", label: "Preferences", icon: ShieldCheck },
+  { href: "/voice-trigger-capture", label: "Capture", icon: Mic2 },
+  { href: "/evaluation", label: "Tests", icon: FlaskConical }
 ];
 
 export function Navigation() {
@@ -29,7 +30,7 @@ export function Navigation() {
           </span>
           <span>
             <span className="block text-sm font-semibold leading-5">ContextCue</span>
-            <span className="block text-xs leading-4 text-slate-500">Privacy controlled memory</span>
+            <span className="block text-xs leading-4 text-slate-500">Local context workspace</span>
           </span>
         </Link>
 
@@ -37,7 +38,7 @@ export function Navigation() {
           <nav className="flex flex-wrap items-center gap-1" aria-label="Primary navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const active = pathname === item.href;
+              const active = pathname === item.href || (item.href === "/" && pathname === "/demo");
               return (
                 <Link
                   key={item.href}
@@ -59,10 +60,10 @@ export function Navigation() {
             type="button"
             onClick={reset}
             className="focus-ring inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-            title="Reset saved demo state"
+            title="Reset saved state"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Reset
+            Reset state
           </button>
         </div>
       </div>

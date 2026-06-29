@@ -30,30 +30,28 @@ export function MemoryCandidateCard({
         <PrivacyBadge value={candidate.sensitivity} label={`${titleCase(candidate.sensitivity)} sensitivity`} />
       </div>
 
-      <p className="rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-700">
-        {candidate.evidence}
-      </p>
-
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+          {titleCase(candidate.suggestedAction)}
+        </span>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+          {candidate.suggestedTtlDays ? `${candidate.suggestedTtlDays} days` : "Long term"}
+        </span>
         {candidate.sourceSnippetIds.map((sourceId) => (
           <EvidencePill key={sourceId} sourceId={sourceId} />
         ))}
       </div>
 
-      <dl className="grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
-        <div>
-          <dt className="font-semibold text-slate-500">Suggested action</dt>
-          <dd>{titleCase(candidate.suggestedAction)}</dd>
-        </div>
-        <div>
-          <dt className="font-semibold text-slate-500">TTL</dt>
-          <dd>{candidate.suggestedTtlDays ? `${candidate.suggestedTtlDays} days` : "Long term"}</dd>
-        </div>
-      </dl>
+      <details className="group rounded-md border border-slate-100 bg-slate-50 p-3">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-600 group-open:text-indigo-700">
+          Evidence
+        </summary>
+        <p className="mt-2 text-xs leading-5 text-slate-600">{candidate.evidence}</p>
+      </details>
 
       {decision ? (
         <p className="text-xs leading-5 text-slate-500">
-          Gate: {titleCase(decision.decision)}. Raw chat stored: {decision.rawChatStored ? "yes" : "no"}.
+          Gate: {titleCase(decision.decision)} / raw chat: {decision.rawChatStored ? "stored" : "not stored"}.
         </p>
       ) : null}
 

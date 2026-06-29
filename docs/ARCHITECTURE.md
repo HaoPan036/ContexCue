@@ -2,11 +2,12 @@
 
 ## Page structure
 
-- `/`: landing page explaining ContextCue in about 10 seconds.
-- `/demo`: three-column workflow for sources, agent reasoning, MemoryGate, and reply options.
+- `/`: primary context workbench for sources, agent reasoning, MemoryGate, and reply options.
+- `/demo`: compatibility route for the same workbench.
 - `/memory-library`: structured memory records with approve, edit, ignore, and expire controls.
-- `/feedback-learning`: reply selection and preference signal creation.
-- `/evaluation`: static V0.1 evaluation suite with 12 test cases.
+- `/feedback-learning`: reply preference selection and preference signal creation.
+- `/voice-trigger-capture`: simulated "Hi Jarvis" transcript capture for intentional memory, correction, blocking, expiry, and reply preference instructions.
+- `/evaluation`: static V0.1 system test suite with 16 cases.
 
 ## Component structure
 
@@ -17,6 +18,7 @@
 - `StitchedContextPanel`: displays the evidence grounded stitched context.
 - `ReplyOptionCard`: renders selectable reply options.
 - `FeedbackEventCard`: shows the saved feedback event and current style profile.
+- `VoiceTriggerCard`: shows simulated transcript parsing, MemoryGate outcome, storage policy, and next reply impact.
 - `EvaluationCaseCard`: renders one static eval case.
 - `PrivacyBadge`: shared privacy/status badge.
 - `EvidencePill`: source or domain citation chip.
@@ -26,13 +28,13 @@
 
 1. `src/data/demo-data.json` provides deterministic synthetic data.
 2. `src/lib/demo-data.ts` exposes typed maps and formatting helpers.
-3. Pages and components read demo data directly for mock agent outputs.
+3. Pages and components read demo data directly for mock agent outputs, including simulated voice trigger transcripts.
 4. `useDemoState` loads and persists optional user changes.
 5. User actions update memory record statuses, selected reply, feedback event, and style profile.
 
 ## State management
 
-The demo uses simple React state. Browser `localStorage` is used only for:
+The workspace uses simple React state. Browser `localStorage` is used only for:
 
 - Approved or changed memory records.
 - Selected reply option.
@@ -43,7 +45,7 @@ The reset button clears those keys and restores deterministic defaults.
 
 ## Mock mode
 
-Default behavior is deterministic mock mode. Extraction, gate decisions, stitched context, reply options, and evaluation results are precomputed from local JSON so the demo is reliable without setup.
+Default behavior is deterministic mock mode. Extraction, gate decisions, stitched context, reply options, voice trigger parsing, and evaluation results are precomputed from local JSON so the demo is reliable without setup.
 
 ## Optional future LLM mode
 

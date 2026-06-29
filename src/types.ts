@@ -44,6 +44,13 @@ export type ReplyStyle =
 
 export type EvaluationStatus = "pass" | "fail";
 
+export type VoiceIntent =
+  | "remember_preference"
+  | "save_sensitive_short_term"
+  | "block_last_conversation"
+  | "update_reply_style"
+  | "correct_reply_framing";
+
 export interface Person {
   id: string;
   displayName: string;
@@ -156,6 +163,23 @@ export interface EvaluationCase {
   status: EvaluationStatus;
 }
 
+export interface VoiceTriggerExample {
+  id: string;
+  transcript: string;
+  parsedIntent: VoiceIntent;
+  extractedMemoryCandidate: string;
+  memoryType: MemoryType | "privacy_instruction" | "tone_correction";
+  sensitivity: Sensitivity;
+  memoryGateDecision: GateDecision;
+  confirmationRequired: boolean;
+  ttlDays: number | null;
+  rawAudioStored: boolean;
+  transcriptStored: boolean;
+  nextReplyChange: string;
+  privacyReason: string;
+  toneMetadataNote: string;
+}
+
 export interface DemoData {
   persons: Person[];
   sourceSnippets: SourceSnippet[];
@@ -165,5 +189,6 @@ export interface DemoData {
   agentRun: AgentRun;
   replyOptions: ReplyOption[];
   styleProfileSeed: UserStyleProfile;
+  voiceTriggerExamples: VoiceTriggerExample[];
   evaluationCases: EvaluationCase[];
 }

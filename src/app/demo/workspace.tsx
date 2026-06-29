@@ -87,14 +87,12 @@ export function DemoWorkspace() {
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
-            <PrivacyBadge value="mock" label="Deterministic mock mode" />
-            <PrivacyBadge value="normal" label="Synthetic data only" />
+            <PrivacyBadge value="mock" label="Local case file" />
+            <PrivacyBadge value="normal" label="Synthetic contacts" />
           </div>
-          <h1 className="text-3xl font-semibold leading-tight text-slate-950">Demo Workspace</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            The demo stitches four scattered sources into task specific context, applies
-            MemoryGate rules, recommends evidence grounded replies, and learns from the final
-            user choice.
+          <h1 className="text-3xl font-semibold leading-tight text-slate-950">Context Workbench</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            Person A · weekend reply task · four available fragments.
           </p>
         </div>
 
@@ -105,7 +103,7 @@ export function DemoWorkspace() {
             className="focus-ring inline-flex h-11 items-center gap-2 rounded-md bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             <Play className="h-4 w-4" aria-hidden="true" />
-            Run Context Stitching
+            Stitch context
           </button>
           <button
             type="button"
@@ -113,7 +111,7 @@ export function DemoWorkspace() {
             className="focus-ring inline-flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Reset demo
+            Reset state
           </button>
         </div>
       </div>
@@ -136,19 +134,13 @@ export function DemoWorkspace() {
         <section className="space-y-4">
           {currentStage === 0 ? (
             <AgentStepCard title="Ready to stitch context" eyebrow="Idle">
-              <p>
-                The workspace is loaded with synthetic snippets. Run the agent to reveal the five
-                stages and inspect each MemoryGate decision.
-              </p>
+              <p>Start from the current incoming message.</p>
             </AgentStepCard>
           ) : null}
 
           {currentStage >= 1 ? (
             <AgentStepCard title="Observe four fragmented sources" eyebrow="Stage 1 / Observe" complete={currentStage > 1} active={currentStage === 1}>
-              <p>
-                The agent sees a private chat, a group chat, a previous AI feedback choice, and a
-                new message. The sources remain inputs; raw chat is not saved as memory.
-              </p>
+              <p>Private chat, group chat, feedback, and new message stay as inputs.</p>
             </AgentStepCard>
           ) : null}
 
@@ -173,10 +165,7 @@ export function DemoWorkspace() {
 
           {currentStage >= 3 ? (
             <AgentStepCard title="Apply MemoryGate privacy rules" eyebrow="Stage 3 / Gate" complete={currentStage > 3} active={currentStage === 3}>
-              <p>
-                Long term preferences, short term emotional context, sensitive health related
-                memory, and raw transcript blocking each receive separate decisions.
-              </p>
+              <p>Save, confirm, expire, or block each candidate.</p>
             </AgentStepCard>
           ) : null}
 
@@ -184,10 +173,7 @@ export function DemoWorkspace() {
 
           {currentStage >= 5 ? (
             <AgentStepCard title="Recommend and learn" eyebrow="Stage 5 / Recommend" active={currentStage === 5}>
-              <p>
-                Option A uses the stitched context carefully: it acknowledges tiredness, lowers
-                planning pressure, avoids spicy food, and leaves space to rest.
-              </p>
+              <p>Choose a reply; the choice updates the scoped style profile.</p>
             </AgentStepCard>
           ) : null}
         </section>
@@ -195,12 +181,12 @@ export function DemoWorkspace() {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <section className="card-shell p-4">
             <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">MemoryGate rules</p>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-              <li>Raw chat is not stored in V0.1.</li>
-              <li>Memories are scoped by person and task.</li>
-              <li>Sensitive context needs confirmation.</li>
-              <li>Health and emotional context expire automatically.</li>
-              <li>Recommendations show evidence.</li>
+            <ul className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-slate-600">
+              {["No raw chat", "Person scoped", "Task scoped", "Confirm sensitive", "Auto expiry", "Evidence"].map((rule) => (
+                <li key={rule} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                  {rule}
+                </li>
+              ))}
             </ul>
           </section>
 

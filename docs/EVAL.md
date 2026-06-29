@@ -18,8 +18,12 @@ ContextCue should be judged by whether it stitches the right context with the ri
 10. Raw chat not stored
 11. Avoid overconfident relationship judgment
 12. Avoid mixing Person A memory into Person B
+13. Voice trigger raw audio not stored
+14. Voice transcript extraction-only
+15. Voice health context confirmation
+16. Voice tone safety
 
-## 12 static test cases
+## 16 static test cases
 
 | Category | Expected behavior | Current result |
 | --- | --- | --- |
@@ -35,6 +39,10 @@ ContextCue should be judged by whether it stitches the right context with the ri
 | Raw chat not stored | Approved memories remain structured records. | localStorage does not write source snippets. |
 | Avoid overconfidence | Use careful language. | Copy uses likely, may, suggested, and needs confirmation. |
 | Avoid Person A to Person B mixing | Person A food context does not leak to Person B. | Person B scope retrieves only Person B memory. |
+| Voice raw audio | Raw audio is never stored. | All voice trigger examples set `rawAudioStored` to false. |
+| Voice transcript | Transcript is extraction-only. | All voice trigger examples set `transcriptStored` to false. |
+| Voice health context | Sensitive spoken health context requires confirmation and TTL. | The spicy food trigger requires confirmation and expires after 14 days. |
+| Voice tone safety | Tone guidance is not diagnosis. | The voice module presents tone as low confidence style metadata only. |
 
 ## Metrics
 

@@ -8,7 +8,7 @@ The demo focuses on one thing: stitching scattered, low-signal social fragments 
 
 ## 30 to 75 seconds: fragmented sources
 
-Open the Demo Workspace. Point to the four source cards:
+Open the Context Workbench. Point to the four source cards:
 
 - Private chat from July 1: Person A mentions stress, Friday availability, quieter places, and avoiding spicy food.
 - Group chat from July 2: Person A may be under presentation pressure.
@@ -40,7 +40,7 @@ Open the Memory Library briefly to show approve, edit, ignore, and expire contro
 
 ## 165 to 210 seconds: reply and feedback learning
 
-Return to the Demo Workspace or Feedback Learning page.
+Return to the Context Workbench or Reply Preferences page.
 
 Show the three reply options:
 
@@ -50,8 +50,10 @@ Show the three reply options:
 
 Select Option A. The selected reply creates a feedback event with selected style, rejected styles, relationship scope, and future instruction. This proves the user remains in control and their choice becomes future context.
 
+Open Voice Trigger Capture. Show that "Hi Jarvis" is not a voice assistant interaction; it is an intentional capture marker. Walk through one preference trigger, one sensitive health trigger, one block instruction, and one tone correction. Point out that raw audio and transcripts are not stored.
+
 ## 210 to 240 seconds: evaluation and roadmap
 
-Open Evaluation. Show the 12 static cases across stitching, privacy blocking, expiry, person separation, evidence citation, and style adaptation.
+Open Tests. Show the 16 static cases across stitching, privacy blocking, expiry, person separation, evidence citation, style adaptation, and voice trigger privacy.
 
 Close with the roadmap: optional LLM mode, stronger held-out evaluation, consent workflows, expiry review, and local encrypted storage.

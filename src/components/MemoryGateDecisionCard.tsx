@@ -21,13 +21,24 @@ export function MemoryGateDecisionCard({ decision }: { decision: MemoryGateDecis
         </div>
       </div>
 
-      <p className="mt-3 text-sm leading-6 text-slate-600">{decision.reason}</p>
-
-      <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-3">
-        <span>TTL: {decision.ttlDays ? `${decision.ttlDays} days` : "None"}</span>
-        <span>Confirmation: {decision.requiresConfirmation ? "required" : "not required"}</span>
-        <span>Raw chat stored: {decision.rawChatStored ? "yes" : "no"}</span>
+      <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+          TTL {decision.ttlDays ? `${decision.ttlDays}d` : "none"}
+        </span>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+          {decision.requiresConfirmation ? "Confirm" : "No confirm"}
+        </span>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+          Raw chat {decision.rawChatStored ? "stored" : "not stored"}
+        </span>
       </div>
+
+      <details className="group mt-3 rounded-md border border-slate-100 bg-slate-50 p-3">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-600 group-open:text-indigo-700">
+          Reason
+        </summary>
+        <p className="mt-2 text-xs leading-5 text-slate-600">{decision.reason}</p>
+      </details>
     </article>
   );
 }

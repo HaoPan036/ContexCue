@@ -29,10 +29,12 @@ export function StitchedContextPanel({ agentRun }: { agentRun: AgentRun }) {
         ))}
       </ul>
 
-      <div className="mt-4 rounded-md border border-indigo-100 bg-indigo-50 p-3">
-        <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Reply strategy</p>
-        <p className="mt-1 text-sm leading-6 text-indigo-950">{agentRun.replyStrategy}</p>
-      </div>
+      <details className="group mt-4 rounded-md border border-indigo-100 bg-indigo-50 p-3">
+        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-normal text-indigo-700">
+          Reply strategy
+        </summary>
+        <p className="mt-2 text-sm leading-6 text-indigo-950">{agentRun.replyStrategy}</p>
+      </details>
     </section>
   );
 }

@@ -394,6 +394,88 @@
     "notes": "Seeded from the previous AI feedback source: prefer warm and low pressure replies unless the user overrides it.",
     "updatedAt": "2025-07-02T22:45:00.000Z"
   },
+  "voiceTriggerExamples": [
+    {
+      "id": "voice-quiet-place",
+      "transcript": "Hi Jarvis, remember that A prefers quiet places.",
+      "parsedIntent": "remember_preference",
+      "extractedMemoryCandidate": "Person A prefers quiet places for meetups.",
+      "memoryType": "preference",
+      "sensitivity": "low",
+      "memoryGateDecision": "allow_long_term",
+      "confirmationRequired": false,
+      "ttlDays": null,
+      "rawAudioStored": false,
+      "transcriptStored": false,
+      "nextReplyChange": "Future meetup replies can suggest a quiet option when the task is relevant to Person A.",
+      "privacyReason": "The user intentionally asked to remember a low sensitivity preference scoped to Person A.",
+      "toneMetadataNote": "No tone or prosody is needed for this instruction."
+    },
+    {
+      "id": "voice-spicy-two-weeks",
+      "transcript": "Hi Jarvis, A is avoiding spicy food this week. Save this for two weeks only.",
+      "parsedIntent": "save_sensitive_short_term",
+      "extractedMemoryCandidate": "Person A is avoiding spicy food this week.",
+      "memoryType": "temporary_health_context",
+      "sensitivity": "high",
+      "memoryGateDecision": "require_user_confirmation",
+      "confirmationRequired": true,
+      "ttlDays": 14,
+      "rawAudioStored": false,
+      "transcriptStored": false,
+      "nextReplyChange": "The next food or meetup reply can avoid spicy suggestions for 14 days after confirmation.",
+      "privacyReason": "Food avoidance may be health related, so MemoryGate requires confirmation and a short TTL.",
+      "toneMetadataNote": "Tone is not used to infer health status or emotional state."
+    },
+    {
+      "id": "voice-do-not-save",
+      "transcript": "Hi Jarvis, do not save the last conversation. It is too private.",
+      "parsedIntent": "block_last_conversation",
+      "extractedMemoryCandidate": "Block storage of the last conversation and do not create reusable memory from it.",
+      "memoryType": "privacy_instruction",
+      "sensitivity": "high",
+      "memoryGateDecision": "block",
+      "confirmationRequired": false,
+      "ttlDays": null,
+      "rawAudioStored": false,
+      "transcriptStored": false,
+      "nextReplyChange": "The next reply must not reuse facts from the blocked conversation unless the user provides them again.",
+      "privacyReason": "The user explicitly marked the recent conversation as too private for memory.",
+      "toneMetadataNote": "The word private is treated as an explicit instruction, not as a psychological signal."
+    },
+    {
+      "id": "voice-warmer-less-pushy",
+      "transcript": "Hi Jarvis, the previous reply was too pushy. For A, make future replies warmer and lower pressure.",
+      "parsedIntent": "update_reply_style",
+      "extractedMemoryCandidate": "For Person A, prefer warmer and lower pressure replies.",
+      "memoryType": "user_reply_style",
+      "sensitivity": "low",
+      "memoryGateDecision": "allow_long_term",
+      "confirmationRequired": false,
+      "ttlDays": null,
+      "rawAudioStored": false,
+      "transcriptStored": false,
+      "nextReplyChange": "The next reply should reduce direct questions, add reassurance, and keep the user in control.",
+      "privacyReason": "This is the user's own style preference, scoped to future replies for Person A.",
+      "toneMetadataNote": "Pushiness is taken from the transcript wording, not inferred from voice tone."
+    },
+    {
+      "id": "voice-natural-not-romantic",
+      "transcript": "Hi Jarvis, you misunderstood me. I want a natural friendly tone, not a romantic framing.",
+      "parsedIntent": "correct_reply_framing",
+      "extractedMemoryCandidate": "Prefer natural friendly framing and avoid romantic framing unless the user explicitly asks.",
+      "memoryType": "tone_correction",
+      "sensitivity": "low",
+      "memoryGateDecision": "allow_long_term",
+      "confirmationRequired": false,
+      "ttlDays": null,
+      "rawAudioStored": false,
+      "transcriptStored": false,
+      "nextReplyChange": "The next reply should sound natural and friendly without implying romance or stronger relationship meaning.",
+      "privacyReason": "The user corrected the assistant's framing; this is a scoped style instruction, not a relationship claim.",
+      "toneMetadataNote": "Tone guidance is low confidence metadata and must not be used for diagnosis or strong emotional claims."
+    }
+  ],
   "evaluationCases": [
     {
       "id": "eval-cross-source",
@@ -464,7 +546,7 @@
       "testName": "Selection creates a feedback event",
       "inputCondition": "User selects or edits a reply option.",
       "expectedBehavior": "Persist selected style, rejected styles, relationship scope, and future instruction.",
-      "currentResult": "Feedback Learning page writes a FeedbackEvent and updates UserStyleProfile in localStorage.",
+      "currentResult": "Reply Preferences writes a FeedbackEvent and updates UserStyleProfile in localStorage.",
       "status": "pass"
     },
     {
@@ -501,6 +583,42 @@
       "inputCondition": "Generate a hypothetical Person B meetup reply.",
       "expectedBehavior": "Do not use Person A's avoid spicy memory for Person B.",
       "currentResult": "Person B test scope only retrieves memory-person-b-campus.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-voice-raw-audio",
+      "category": "Voice trigger privacy",
+      "testName": "Raw audio is never stored",
+      "inputCondition": "User speaks a simulated Hi Jarvis trigger.",
+      "expectedBehavior": "The module should show rawAudioStored false for every trigger.",
+      "currentResult": "All voice trigger examples mark rawAudioStored as false.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-voice-transcript",
+      "category": "Voice trigger privacy",
+      "testName": "Transcript is extraction-only",
+      "inputCondition": "A simulated transcript is parsed into an intent and memory candidate.",
+      "expectedBehavior": "The transcript should not become persistent memory.",
+      "currentResult": "All voice trigger examples mark transcriptStored as false and show structured candidates instead.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-voice-health",
+      "category": "Voice trigger MemoryGate",
+      "testName": "Voice health context requires confirmation",
+      "inputCondition": "User says Person A is avoiding spicy food this week and asks to save it for two weeks.",
+      "expectedBehavior": "Treat as sensitive, require confirmation, and set a 14 day TTL.",
+      "currentResult": "The voice trigger decision is require_user_confirmation with ttlDays 14.",
+      "status": "pass"
+    },
+    {
+      "id": "eval-voice-tone-safety",
+      "category": "Voice trigger tone safety",
+      "testName": "Tone guidance is not diagnosis",
+      "inputCondition": "User corrects the desired reply tone or framing.",
+      "expectedBehavior": "Use tone only as low confidence style metadata and avoid psychological claims.",
+      "currentResult": "The module states that tone metadata must not be used for diagnosis or strong emotional claims.",
       "status": "pass"
     }
   ]

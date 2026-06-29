@@ -10,25 +10,30 @@ export default function EvaluationPage() {
       <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.34fr)] lg:items-end">
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
-            <PrivacyBadge value="mock" label="Static V0.1 evaluation" />
+            <PrivacyBadge value="mock" label="Static checks" />
             <PrivacyBadge value="pass" label={`${passCount}/${demoData.evaluationCases.length} passing`} />
           </div>
-          <h1 className="text-3xl font-semibold leading-tight text-slate-950">Evaluation</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            A static test suite for the demo thesis: stitching must be relevant, evidence grounded,
-            scoped by person and task, privacy controlled, and shaped by user feedback.
+          <h1 className="text-3xl font-semibold leading-tight text-slate-950">System Tests</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            Checks for relevance, privacy boundaries, expiry, evidence, and person separation.
           </p>
         </div>
 
         <section className="card-shell p-4">
           <p className="text-xs font-semibold uppercase tracking-normal text-indigo-700">Metrics</p>
-          <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-            <li>Context relevance</li>
-            <li>Memory leakage rate</li>
-            <li>Wrong person contamination rate</li>
-            <li>Expiration correctness</li>
-            <li>Evidence coverage</li>
-            <li>Reply style adaptation</li>
+          <ul className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-slate-600">
+            {[
+              "Context relevance",
+              "Memory leakage",
+              "Wrong person",
+              "Expiration",
+              "Evidence",
+              "Style adaptation"
+            ].map((metric) => (
+              <li key={metric} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                {metric}
+              </li>
+            ))}
           </ul>
         </section>
       </div>
