@@ -1,7 +1,23 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Check, Mic2, PenLine, RotateCcw, Send, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  Camera,
+  Check,
+  CheckCheck,
+  ChevronLeft,
+  Mic2,
+  MoreVertical,
+  Paperclip,
+  PenLine,
+  Phone,
+  RotateCcw,
+  Send,
+  ShieldCheck,
+  Smile,
+  Sparkles,
+  Video
+} from "lucide-react";
 import { FAQDrawer } from "@/components/cross-app/FAQDrawer";
 import {
   crossAppSources,
@@ -13,6 +29,15 @@ import {
 import { STORAGE_KEYS, clearDemoStorage } from "@/lib/storage";
 
 type MomentMode = "idle" | "manual" | "assist" | "used";
+
+const messageTimes: Record<string, string> = {
+  "wa-1": "10:31",
+  "wa-2": "10:32",
+  "wa-3": "10:34",
+  "wa-4": "10:35",
+  "wu-1": "10:39",
+  "wa-5": "10:42"
+};
 
 function saveCrossAppState(feedbackUsed: boolean) {
   if (typeof window === "undefined") {
@@ -27,7 +52,7 @@ function saveCrossAppState(feedbackUsed: boolean) {
       JSON.stringify({
         id: `cross-app-feedback-${Date.now()}`,
         selectedStyle: "warm_low_pressure",
-        savedPreference: "For Person A, future replies should avoid sounding pushy.",
+        savedPreference: "For Person A, AI news replies should be practical, sourced, and low-hype.",
         createdAt: new Date().toISOString()
       })
     );
@@ -37,7 +62,7 @@ function saveCrossAppState(feedbackUsed: boolean) {
 export function CrossAppDemo() {
   const [mode, setMode] = useState<MomentMode>("idle");
   const [faqOpen, setFaqOpen] = useState(false);
-  const weChatSource = crossAppSources.find((source) => source.kind === "wechat_style_chat");
+  const whatsAppSource = crossAppSources.find((source) => source.kind === "whatsapp_chat");
   const doubaoSource = crossAppSources.find((source) => source.kind === "doubao_style_ai");
   const cueActive = mode === "assist" || mode === "used";
 
@@ -78,46 +103,63 @@ export function CrossAppDemo() {
 
         <div className="grid flex-1 gap-6 lg:grid-cols-[minmax(420px,0.98fr)_minmax(340px,0.68fr)] lg:items-center">
           <section className="mx-auto w-full max-w-[520px]">
-            <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.18)]">
-              <div className="overflow-hidden rounded-[1.55rem] bg-[#eef1f5]">
-                <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+            <div className="rounded-[2rem] border border-slate-200 bg-[#111b21] p-2 shadow-[0_22px_70px_rgba(15,23,42,0.22)]">
+              <div className="overflow-hidden rounded-[1.55rem] bg-[#efeae2]">
+                <div className="flex items-center justify-between bg-[#075e54] px-5 pb-2 pt-3 text-xs font-medium text-white/95">
+                  <span>10:42</span>
+                  <span className="tracking-normal">5G  82%</span>
+                </div>
+
+                <header className="flex items-center justify-between bg-[#075e54] px-3 py-2 text-white shadow-sm">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <ChevronLeft className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#d8f3dc] text-sm font-semibold text-[#075e54]">
                       A
                     </span>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-950">Person A</p>
-                      <p className="text-xs text-slate-500">Weekend plan</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">A</p>
+                      <p className="truncate text-xs text-white/75">online</p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">Today</span>
+                  <div className="flex shrink-0 items-center gap-3 text-white/90">
+                    <Video className="h-5 w-5" aria-hidden="true" />
+                    <Phone className="h-5 w-5" aria-hidden="true" />
+                    <MoreVertical className="h-5 w-5" aria-hidden="true" />
+                  </div>
                 </header>
 
-                <div className="flex min-h-[600px] flex-col justify-between px-4 py-5">
-                  <div className="space-y-3">
-                    {weChatSource?.messages.map((message) => {
+                <div className="relative flex min-h-[600px] flex-col justify-between overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.18] [background-image:radial-gradient(circle_at_1px_1px,#111b21_1px,transparent_0)] [background-size:18px_18px]" />
+
+                  <div className="relative space-y-2 px-3 py-4">
+                    <div className="mx-auto w-fit max-w-[86%] rounded-md bg-[#fdf4c5] px-3 py-1.5 text-center text-[11px] leading-4 text-[#5f5134] shadow-sm">
+                      Messages are end-to-end encrypted. ContextCue only extracts what you approve.
+                    </div>
+
+                    {whatsAppSource?.messages.map((message) => {
                       const fromUser = message.role === "user";
                       const latest = message.id === "wa-5";
 
                       return (
                         <div key={message.id} className={`flex ${fromUser ? "justify-end" : "justify-start"}`}>
                           <div className={`max-w-[82%] ${latest ? "relative" : ""}`}>
-                            {message.timestamp ? (
-                              <p className="mb-2 text-center text-[11px] font-medium text-slate-400">{message.timestamp}</p>
-                            ) : null}
                             <div
-                              className={`rounded-2xl px-3.5 py-2.5 text-[15px] leading-6 shadow-sm ${
+                              className={`rounded-lg px-3 py-2 text-[14.5px] leading-5 shadow-sm ${
                                 fromUser
-                                  ? "rounded-tr-md bg-[#2563eb] text-white"
+                                  ? "rounded-tr-none bg-[#dcf8c6] text-[#111b21]"
                                   : latest
-                                    ? "rounded-tl-md border border-sky-200 bg-white text-slate-950 shadow-[0_12px_30px_rgba(14,116,144,0.13)]"
-                                    : "rounded-tl-md border border-slate-200 bg-white text-slate-800"
+                                    ? "rounded-tl-none bg-white text-[#111b21] ring-2 ring-[#25d366]/40"
+                                    : "rounded-tl-none bg-white text-[#111b21]"
                               }`}
                             >
                               {message.text}
+                              <span className="ml-2 inline-flex translate-y-1 items-center gap-1 text-[10px] text-[#667781]">
+                                {messageTimes[message.id] ?? message.timestamp}
+                                {fromUser ? <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" aria-hidden="true" /> : null}
+                              </span>
                             </div>
                             {latest ? (
-                              <span className="absolute -right-2 -top-2 h-3 w-3 rounded-full border-2 border-white bg-cyan-500" />
+                              <span className="absolute -right-1.5 -top-1.5 h-3 w-3 rounded-full border-2 border-[#efeae2] bg-[#25d366]" />
                             ) : null}
                           </div>
                         </div>
@@ -125,19 +167,46 @@ export function CrossAppDemo() {
                     })}
                   </div>
 
-                  <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-                    <div className="grid grid-cols-2 gap-2">
+                  <div className="relative p-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm">
+                        <Smile className="h-5 w-5 shrink-0 text-[#667781]" aria-hidden="true" />
+                        <input
+                          className="focus-ring min-w-0 flex-1 border-0 bg-transparent text-sm text-[#111b21] outline-none"
+                          placeholder={mode === "manual" ? "Message" : "Type a message"}
+                          readOnly={mode !== "manual"}
+                        />
+                        <Paperclip className="h-5 w-5 shrink-0 text-[#667781]" aria-hidden="true" />
+                        <Camera className="h-5 w-5 shrink-0 text-[#667781]" aria-hidden="true" />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode("assist");
+                          saveCrossAppState(false);
+                        }}
+                        className={`focus-ring inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition ${
+                          cueActive ? "bg-[#128c7e]" : "bg-[#25d366] hover:bg-[#1fb95a]"
+                        }`}
+                        title="Ask ContextCue"
+                      >
+                        <Mic2 className="h-5 w-5" aria-hidden="true" />
+                        <span className="sr-only">Ask ContextCue</span>
+                      </button>
+                    </div>
+
+                    <div className="mt-2 grid grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setMode("manual")}
-                        className={`focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold transition ${
+                        className={`focus-ring inline-flex h-9 items-center justify-center gap-2 rounded-full px-3 text-xs font-semibold transition ${
                           mode === "manual"
-                            ? "bg-slate-900 text-white"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            ? "bg-[#111b21] text-white"
+                            : "bg-white/85 text-[#3b4a54] hover:bg-white"
                         }`}
                       >
-                        <PenLine className="h-4 w-4" aria-hidden="true" />
-                        Write
+                        <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
+                        Reply myself
                       </button>
                       <button
                         type="button"
@@ -145,24 +214,12 @@ export function CrossAppDemo() {
                           setMode("assist");
                           saveCrossAppState(false);
                         }}
-                        className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-cyan-600 px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-cyan-700"
+                        className="focus-ring inline-flex h-9 items-center justify-center gap-2 rounded-full bg-white/85 px-3 text-xs font-semibold text-[#075e54] transition hover:bg-white"
                       >
-                        <Mic2 className="h-4 w-4" aria-hidden="true" />
-                        Ask
+                        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                        ContextCue
                       </button>
                     </div>
-
-                    {mode === "manual" ? (
-                      <div className="mt-2 flex gap-2">
-                        <input
-                          className="focus-ring h-10 min-w-0 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-800"
-                          placeholder="Type your reply..."
-                        />
-                        <button className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-                          <Send className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </div>
@@ -178,7 +235,7 @@ export function CrossAppDemo() {
                 </div>
                 <span
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    cueActive ? "bg-cyan-50 text-cyan-700" : "bg-slate-100 text-slate-500"
+                    cueActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
                   }`}
                 >
                   {cueActive ? "Listening" : "Idle"}
@@ -188,14 +245,14 @@ export function CrossAppDemo() {
               {mode === "idle" ? (
                 <div className="mt-5 space-y-3">
                   <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-                    <p className="text-sm font-medium text-slate-950">A reply that needs context.</p>
+                    <p className="text-sm font-medium text-slate-950">A reply that needs current context.</p>
                     <p className="mt-1 text-sm leading-6 text-slate-600">
-                      You can answer yourself, or ask ContextCue to remember the right details first.
+                      The chat is about a fast-moving AI feature, but A cares more about privacy and practical tradeoffs.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-500">
                     <ShieldCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
-                    No raw chat or audio is stored.
+                    Raw WhatsApp messages and audio are not stored.
                   </div>
                 </div>
               ) : null}
@@ -209,12 +266,12 @@ export function CrossAppDemo() {
 
               {cueActive ? (
                 <div className="mt-5 space-y-4">
-                  <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-4">
+                  <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
                     <div className="flex items-center gap-2">
-                      <Mic2 className="h-4 w-4 text-cyan-700" aria-hidden="true" />
-                      <p className="text-xs font-semibold uppercase tracking-normal text-cyan-700">Voice capture</p>
+                      <Mic2 className="h-4 w-4 text-emerald-700" aria-hidden="true" />
+                      <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">Voice capture</p>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-cyan-950">{voiceCommand.transcript}</p>
+                    <p className="mt-2 text-sm leading-6 text-emerald-950">{voiceCommand.transcript}</p>
                   </div>
 
                   <div className="grid gap-2">
@@ -222,7 +279,13 @@ export function CrossAppDemo() {
                       <div key={operation.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
                         <span className="min-w-0 text-sm font-medium text-slate-800">{operation.content}</span>
                         <span className="shrink-0 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600">
-                          {operation.requiresConfirmation ? "confirm" : operation.ttlDays ? `${operation.ttlDays}d` : "save"}
+                          {operation.requiresConfirmation
+                            ? operation.ttlDays
+                              ? `confirm · ${operation.ttlDays}d`
+                              : "confirm"
+                            : operation.ttlDays
+                              ? `${operation.ttlDays}d`
+                              : "save"}
                         </span>
                       </div>
                     ))}
@@ -230,7 +293,7 @@ export function CrossAppDemo() {
 
                   <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-cyan-700" aria-hidden="true" />
+                      <Sparkles className="h-4 w-4 text-emerald-700" aria-hidden="true" />
                       <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">Next reply</p>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-900">{replySuggestion.text}</p>
@@ -240,7 +303,7 @@ export function CrossAppDemo() {
                       className={`focus-ring mt-3 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
                         mode === "used"
                           ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "bg-slate-900 text-white hover:bg-slate-800"
+                          : "bg-[#075e54] text-white hover:bg-[#064d45]"
                       }`}
                     >
                       {mode === "used" ? <Check className="h-4 w-4" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
@@ -264,7 +327,7 @@ export function CrossAppDemo() {
 
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex flex-wrap gap-2">
-                {["No raw audio", "Transcript used for extraction", "Health context needs confirmation", "User controls reply"].map((rule) => (
+                {["No raw audio", "Transcript used for extraction", "No raw WhatsApp history", "Sensitive context needs confirmation"].map((rule) => (
                   <span key={rule} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
                     {rule}
                   </span>

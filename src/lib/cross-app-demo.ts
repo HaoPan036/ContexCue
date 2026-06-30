@@ -7,75 +7,75 @@ import type {
 
 export const crossAppSources: AppSource[] = [
   {
-    id: "wechat-style",
-    kind: "wechat_style_chat",
-    label: "WeChat style chat",
-    subtitle: "Person A · normal conversation",
+    id: "whatsapp-chat",
+    kind: "whatsapp_chat",
+    label: "WhatsApp chat",
+    subtitle: "Person A · AI news discussion",
     messages: [
       {
         id: "wa-1",
         role: "person_a",
-        text: "This week has been exhausting. My advisor criticized me again in group meeting."
+        text: "Did you see Gemini's new personalized image thing with Google Photos?"
       },
       {
         id: "wa-2",
         role: "person_a",
-        text: "I might still be free this weekend."
+        text: "Everyone is posting AI photo edits again."
       },
       {
         id: "wa-3",
         role: "person_a",
-        text: "Can we find somewhere quiet this time? Last place was too noisy."
+        text: "It looks fun, but I get nervous when tools connect to my photos."
       },
       {
         id: "wa-4",
         role: "person_a",
-        text: "Also no spicy food recently. My stomach has not been great."
+        text: "I don't want a dramatic take. I just want to know if it's actually safe to try."
       },
       {
         id: "wu-1",
         role: "user",
-        text: "Sure, I'll check."
+        text: "Yeah, I saw the update. Let me check the details."
       },
       {
         id: "wa-5",
         role: "person_a",
-        text: "Are we still going out this weekend? I feel a bit tired.",
-        timestamp: "Later"
+        text: "Can you send me the short version before I decide?",
+        timestamp: "10:42"
       }
     ]
   },
   {
     id: "doubao-style",
     kind: "doubao_style_ai",
-    label: "Doubao style AI chat",
+    label: "AI reply feedback",
     subtitle: "Reply advice · feedback signal",
     messages: [
       {
         id: "du-1",
         role: "user",
-        text: "How should I reply to A? I want to sound caring, but not pushy."
+        text: "How should I reply to A about the Gemini image feature? Keep it practical."
       },
       {
         id: "da-1",
         role: "assistant",
-        text: "Option 1: Directly ask what happened."
+        text: "Option 1: Hype the feature and say everyone should try it."
       },
       {
         id: "da-2",
         role: "assistant",
-        text: "Option 2: Suggest a place immediately."
+        text: "Option 2: Tell them to avoid it completely."
       },
       {
         id: "da-3",
         role: "assistant",
-        text: "Option 3: Acknowledge tiredness and give a low pressure option.",
+        text: "Option 3: Summarize the feature, mention privacy tradeoffs, and keep the choice low pressure.",
         selected: true
       },
       {
         id: "ds-1",
         role: "system",
-        text: "User selected Option 3 and edited it slightly.",
+        text: "User selected Option 3 and removed the hype language.",
         edited: true
       }
     ]
@@ -86,53 +86,53 @@ export const voiceCommand: VoiceCommand = {
   id: "voice-main",
   label: "Voice trigger",
   transcript:
-    "Hi Jarvis, remember that A prefers quiet places. Also, don't make my reply sound pushy. The spicy food thing is temporary, only keep it for two weeks.",
+    "Hi Jarvis, remember that A is cautious about AI tools that connect to personal photos. For AI news, keep replies practical, sourced, and not hypey.",
   sampleCommands: [
-    "Remember quiet places",
-    "Avoid pushy replies",
-    "Keep spicy food for 14 days"
+    "Remember AI photo privacy concern",
+    "Use a practical tone for AI news",
+    "Avoid hype language"
   ]
 };
 
 export const memoryOperations: MemoryOperation[] = [
   {
-    id: "op-quiet",
-    label: "Quiet place preference",
-    content: "A prefers quiet places",
+    id: "op-ai-privacy",
+    label: "AI photo privacy preference",
+    content: "A is cautious about AI tools that connect to personal photos",
     personId: "person-a",
-    sensitivity: "low",
-    ttlDays: null,
-    requiresConfirmation: false
-  },
-  {
-    id: "op-style",
-    label: "Reply style",
-    content: "For A, prefer warm and low pressure replies",
-    personId: "person-a",
-    sensitivity: "low",
-    ttlDays: null,
-    requiresConfirmation: false
-  },
-  {
-    id: "op-spicy",
-    label: "Temporary food context",
-    content: "Avoid spicy food for A for 14 days",
-    personId: "person-a",
-    sensitivity: "high",
-    ttlDays: 14,
+    sensitivity: "medium",
+    ttlDays: 30,
     requiresConfirmation: true
+  },
+  {
+    id: "op-style-practical",
+    label: "Reply style",
+    content: "For A, explain AI news in a practical, low-hype tone",
+    personId: "person-a",
+    sensitivity: "low",
+    ttlDays: null,
+    requiresConfirmation: false
+  },
+  {
+    id: "op-source-context",
+    label: "Source preference",
+    content: "When discussing fast-moving AI news with A, include source context",
+    personId: "person-a",
+    sensitivity: "low",
+    ttlDays: null,
+    requiresConfirmation: false
   }
 ];
 
 export const replySuggestion: ReplySuggestion = {
   id: "reply-suggestion-main",
   text:
-    "This week sounds really tiring. We can find a quiet place and avoid spicy food. If you'd rather rest, that's totally fine too. We can decide based on how you feel this weekend.",
+    "Short version: Gemini can now personalize image prompts using your interests and connected Google Photos. Google says private photo libraries are not used to train the model, but I would still check what you connect and keep it off if you are unsure. No rush to try it.",
   usedContext: [
-    "A prefers quiet places",
-    "A recently avoids spicy food",
-    "User prefers low pressure replies with A",
-    "A seems tired this week"
+    "A is cautious about personal photos",
+    "A asked for the short version",
+    "Use practical AI news tone",
+    "Avoid hype language"
   ]
 };
 

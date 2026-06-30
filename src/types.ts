@@ -185,7 +185,7 @@ export interface VoiceTriggerExample {
   toneMetadataNote: string;
 }
 
-export type AppSourceKind = "wechat_style_chat" | "doubao_style_ai";
+export type AppSourceKind = "whatsapp_chat" | "doubao_style_ai";
 
 export type AppMessageRole = "person_a" | "user" | "assistant" | "system";
 
