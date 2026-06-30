@@ -38,22 +38,19 @@ ContextCue parses the instruction, applies MemoryGate, updates structured memory
 This week sounds really tiring. We can find a quiet place and avoid spicy food. If you'd rather rest, that's totally fine too. We can decide based on how you feel this weekend.
 ```
 
-## Core workflow
+## Usage moment
 
-1. Show normal app conversations.
-2. User clicks Run demo to simulate a voice trigger.
-3. Transcript appears.
-4. Parsed instructions appear.
-5. MemoryGate decisions appear.
-6. ContextCue updates memory in the background.
-7. Final reply suggestion appears.
-8. User can click Use this reply to save a feedback event.
+The homepage centers on one moment: Person A sends a tired message, and the user decides what to do next.
+
+- Continue myself: ContextCue stays quiet.
+- Voice: ask AI to handle: ContextCue extracts structured memory, applies MemoryGate, and suggests a reply.
+- Use this reply: the selected reply saves a future style preference.
 
 ## Voice Trigger Capture
 
 V0.1 uses simulated transcripts instead of microphone input. Voice is not used as a voice assistant. The phrase "Hi Jarvis" marks an intentional memory capture instruction: remember, correct, block, expire, or update a future reply preference.
 
-The workspace uses fixed transcripts instead of real microphone input. It shows each transcript, parsed intent, extracted candidate, MemoryGate decision, confirmation requirement, audio/transcript storage status, and how the instruction changes the next reply.
+The workspace uses fixed transcripts instead of real microphone input. Voice instructions are converted into structured memory operations; raw audio and raw chat are not stored.
 
 ## MemoryGate design
 

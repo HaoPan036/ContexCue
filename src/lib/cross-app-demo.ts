@@ -1,8 +1,6 @@
 import type {
   AppSource,
-  MemoryGateDecision,
   MemoryOperation,
-  ParsedIntent,
   ReplySuggestion,
   VoiceCommand
 } from "@/types";
@@ -96,27 +94,6 @@ export const voiceCommand: VoiceCommand = {
   ]
 };
 
-export const parsedIntents: ParsedIntent[] = [
-  {
-    id: "intent-save-memory",
-    label: "save_memory",
-    target: "Person A",
-    summary: "Remember quiet place preference."
-  },
-  {
-    id: "intent-reply-preference",
-    label: "update_reply_preference",
-    target: "Person A",
-    summary: "Future replies should be warm and low pressure."
-  },
-  {
-    id: "intent-short-term",
-    label: "save_short_term_memory",
-    target: "Person A",
-    summary: "Avoid spicy food for two weeks."
-  }
-];
-
 export const memoryOperations: MemoryOperation[] = [
   {
     id: "op-quiet",
@@ -144,68 +121,6 @@ export const memoryOperations: MemoryOperation[] = [
     sensitivity: "high",
     ttlDays: 14,
     requiresConfirmation: true
-  }
-];
-
-export const crossAppGateDecisions: MemoryGateDecision[] = [
-  {
-    memoryCandidateId: "op-quiet",
-    label: "Quiet place preference",
-    scope: "Person A",
-    decision: "allow_long_term",
-    reason: "Low sensitivity preference, useful for future meetup replies.",
-    ttlDays: null,
-    requiresConfirmation: false,
-    rawChatStored: false
-  },
-  {
-    memoryCandidateId: "op-spicy",
-    label: "Spicy food",
-    scope: "Person A",
-    decision: "require_user_confirmation",
-    reason: "Health-adjacent context should be short term and confirmed.",
-    ttlDays: 14,
-    requiresConfirmation: true,
-    rawChatStored: false
-  },
-  {
-    memoryCandidateId: "op-style",
-    label: "Pushy reply style",
-    scope: "Person A",
-    decision: "allow_long_term",
-    reason: "User preference about their own reply style.",
-    ttlDays: null,
-    requiresConfirmation: false,
-    rawChatStored: false
-  },
-  {
-    memoryCandidateId: "raw-audio",
-    label: "Raw audio",
-    decision: "block",
-    reason: "V0.1 never stores raw audio.",
-    ttlDays: null,
-    requiresConfirmation: false,
-    rawChatStored: false,
-    rawAudioStored: false
-  },
-  {
-    memoryCandidateId: "transcript",
-    label: "Transcript",
-    decision: "ignore",
-    reason: "Transcript is extraction input only.",
-    ttlDays: null,
-    requiresConfirmation: false,
-    rawChatStored: false,
-    transcriptStored: false
-  },
-  {
-    memoryCandidateId: "raw-chat",
-    label: "Raw chat",
-    decision: "block",
-    reason: "ContextCue stores structured memory candidates, not chat logs.",
-    ttlDays: null,
-    requiresConfirmation: false,
-    rawChatStored: false
   }
 ];
 

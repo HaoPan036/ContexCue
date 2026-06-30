@@ -2,7 +2,7 @@
 
 ## Page structure
 
-- `/`: primary cross-app demo with WeChat-style chat, Doubao-style AI advice, voice trigger, ContextCue status, MemoryGate, and reply suggestion.
+- `/`: primary usage moment with a WeChat-style chat, a lightweight ContextCue panel, manual reply choice, and voice-assisted action.
 - `/demo`: compatibility route for the same cross-app demo.
 - `/memory-library`: structured memory records with approve, edit, ignore, and expire controls.
 - `/feedback-learning`: reply preference selection and preference signal creation.
@@ -11,14 +11,7 @@
 
 ## Component structure
 
-- `AppMockup`: frames app-like mockup surfaces.
-- `WeChatMockup`: renders the Person A chat scenario.
-- `DoubaoMockup`: renders the AI advice and user feedback signal.
-- `VoiceTriggerBar`: simulates the "Hi Jarvis" command.
-- `ContextCueStatus`: compact background agent status panel.
-- `MemoryGatePanel`: compact privacy decisions.
-- `ParsedIntentCard`: transcript, parsed intents, and memory operations.
-- `ReplySuggestionCard`: final reply and compact evidence.
+- `CrossAppDemo`: root usage moment that lets the user continue manually or ask ContextCue to handle the moment.
 - `FAQDrawer`: deeper explanation outside the main screen.
 - `SourceCard`: legacy source snippet card.
 - `AgentStepCard`: wraps each agent stage.
@@ -37,7 +30,7 @@
 
 1. `src/lib/cross-app-demo.ts` provides deterministic primary scenario data.
 2. `src/data/demo-data.json` provides legacy structured memory and evaluation fixtures.
-3. The root page reads fixed app messages, voice command, parsed intents, memory operations, gate decisions, reply suggestion, and FAQ content.
+3. The root page reads fixed app messages, voice command, memory operations, reply suggestion, and FAQ content.
 4. User actions update local state and selected structured memory/feedback entries in `localStorage`.
 5. The reset button clears all ContextCue demo keys.
 
