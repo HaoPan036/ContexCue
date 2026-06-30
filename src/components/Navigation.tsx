@@ -22,14 +22,14 @@ export function Navigation() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/5 bg-[#f5f2ec]/85 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:min-h-[73px] lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <header className="sticky top-0 z-40 h-16 border-b border-black/5 bg-[#f5f2ec]/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="focus-ring w-fit rounded-md text-sm font-semibold tracking-normal text-[#111111]">
           ContextCue
         </Link>
 
-        <div className="flex items-center gap-2 overflow-x-auto">
-          <nav className="flex w-max items-center gap-6" aria-label="Primary navigation">
+        <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
+          <nav className="flex w-max items-center gap-5" aria-label="Primary navigation">
             {navItems.map((item) => {
               const active = pathname === item.href || (item.href === "/" && pathname === "/demo");
               return (

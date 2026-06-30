@@ -76,18 +76,18 @@ export function CrossAppDemo() {
   }, []);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f5f2ec] text-[#111111]">
-      <section className="relative mx-auto min-h-[calc(100vh-73px)] max-w-7xl px-4 pb-10 pt-10 sm:px-6 lg:px-8 lg:pt-14">
-        <div className="relative z-10 mx-auto max-w-5xl text-center">
+    <main className="h-[calc(100vh-64px)] overflow-hidden bg-[#f5f2ec] text-[#111111]">
+      <section className="relative mx-auto grid h-full max-w-7xl grid-cols-[minmax(300px,0.86fr)_minmax(340px,0.72fr)] items-center gap-8 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-normal text-[#6b675f]">Private memory for personal AI</p>
-          <h1 className="mt-4 text-6xl font-semibold leading-none text-[#111111] sm:text-7xl lg:text-8xl">
+          <h1 className="mt-5 text-6xl font-semibold leading-none text-[#111111] sm:text-7xl lg:text-8xl">
             ContextCue
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-xl leading-8 text-[#3f3b34] sm:text-2xl">
+          <p className="mt-5 max-w-md text-xl leading-8 text-[#3f3b34] sm:text-2xl">
             Remember only what you mean.
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={askContextCue}
@@ -115,19 +115,25 @@ export function CrossAppDemo() {
               <span className="sr-only">Reset</span>
             </button>
           </div>
+
+          <div className="mt-10 grid max-w-sm grid-cols-3 gap-2 text-xs font-semibold uppercase tracking-normal text-[#6b675f]">
+            <span>Capture</span>
+            <span>Gate</span>
+            <span>Reply</span>
+          </div>
         </div>
 
-        <div className="relative z-0 mx-auto mt-10 max-w-5xl">
-          <div className="absolute inset-x-4 top-16 h-[72%] rounded-[2.5rem] bg-[#e6dfd3]" />
+        <div className="relative z-0 flex h-full min-h-0 items-center justify-center">
+          <div className="absolute inset-y-10 left-0 right-4 rounded-[2.5rem] bg-[#e6dfd3]" />
 
-          <div className="relative mx-auto w-full max-w-[390px] rounded-[2.35rem] border border-black/10 bg-[#111b21] p-2 shadow-[0_30px_90px_rgba(42,36,27,0.28)] sm:max-w-[430px]">
+          <div className="relative w-full max-w-[398px] rounded-[2.2rem] border border-black/10 bg-[#111b21] p-2 shadow-[0_30px_90px_rgba(42,36,27,0.28)]">
             <div className="overflow-hidden rounded-[1.85rem] bg-[#efeae2]">
-              <div className="flex items-center justify-between bg-[#075e54] px-5 pb-2 pt-3 text-xs font-medium text-white/95">
+              <div className="flex items-center justify-between bg-[#075e54] px-5 pb-1.5 pt-2.5 text-xs font-medium text-white/95">
                 <span>10:42</span>
                 <span>5G  82%</span>
               </div>
 
-              <header className="flex items-center justify-between bg-[#075e54] px-3 py-2 text-white shadow-sm">
+              <header className="flex items-center justify-between bg-[#075e54] px-3 py-1.5 text-white shadow-sm">
                 <div className="flex min-w-0 items-center gap-2">
                   <ChevronLeft className="h-5 w-5 shrink-0" aria-hidden="true" />
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#d8f3dc] text-sm font-semibold text-[#075e54]">
@@ -145,10 +151,10 @@ export function CrossAppDemo() {
                 </div>
               </header>
 
-              <div className="relative flex min-h-[470px] flex-col justify-between overflow-hidden sm:min-h-[540px]">
+              <div className="relative flex h-[clamp(390px,calc(100vh-220px),510px)] flex-col justify-between overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_1px_1px,#111b21_1px,transparent_0)] [background-size:18px_18px]" />
 
-                <div className="relative space-y-2 px-3 py-4">
+                <div className="relative space-y-2 px-3 py-3">
                   {whatsAppSource?.messages.map((message) => {
                     const fromUser = message.role === "user";
                     const latest = message.id === "wa-5";
@@ -181,7 +187,7 @@ export function CrossAppDemo() {
                 </div>
 
                 {cueActive ? (
-                  <div className="absolute inset-x-3 bottom-[74px] rounded-2xl bg-[#111b21]/95 p-4 text-white shadow-[0_18px_50px_rgba(17,27,33,0.34)] backdrop-blur">
+                  <div className="absolute inset-x-3 bottom-[68px] rounded-2xl bg-[#111b21]/95 p-3 text-white shadow-[0_18px_50px_rgba(17,27,33,0.34)] backdrop-blur">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <Sparkles className="h-4 w-4 text-[#25d366]" aria-hidden="true" />
@@ -191,8 +197,8 @@ export function CrossAppDemo() {
                         {mode === "used" ? "saved" : "ready"}
                       </span>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-white/88">{replySuggestion.text}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <p className="mt-2 text-sm leading-6 text-white/88">{replySuggestion.text}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
                       {memoryOperations.slice(0, 3).map((operation) => (
                         <span key={operation.id} className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70">
                           {operation.label}
@@ -202,7 +208,7 @@ export function CrossAppDemo() {
                     <button
                       type="button"
                       onClick={useReply}
-                      className="focus-ring mt-3 inline-flex h-9 items-center gap-2 rounded-full bg-[#25d366] px-3 text-sm font-semibold text-[#052e1a] transition hover:bg-[#34e577]"
+                      className="focus-ring mt-2 inline-flex h-8 items-center gap-2 rounded-full bg-[#25d366] px-3 text-sm font-semibold text-[#052e1a] transition hover:bg-[#34e577]"
                     >
                       {mode === "used" ? <Check className="h-4 w-4" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
                       {mode === "used" ? "Saved" : "Use reply"}
@@ -239,11 +245,6 @@ export function CrossAppDemo() {
           </div>
         </div>
 
-        <div className="relative z-10 mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-2 text-center text-xs font-semibold uppercase tracking-normal text-[#6b675f]">
-          <span>Capture</span>
-          <span>Gate</span>
-          <span>Reply</span>
-        </div>
       </section>
     </main>
   );
