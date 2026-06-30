@@ -10,7 +10,8 @@ const navItems = [
   { href: "/memory-library", label: "Memory" },
   { href: "/feedback-learning", label: "Style" },
   { href: "/voice-trigger-capture", label: "Capture" },
-  { href: "/evaluation", label: "Tests" }
+  { href: "/evaluation", label: "Tests" },
+  { href: "/settings", label: "API" }
 ];
 
 export function Navigation() {

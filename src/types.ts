@@ -236,6 +236,19 @@ export interface ReplySuggestion {
   usedContext: string[];
 }
 
+export type ApiProvider = "openai";
+
+export type ApiSurface = "responses";
+
+export interface ApiRuntimeSettings {
+  provider: ApiProvider;
+  apiSurface: ApiSurface;
+  model: string | null;
+  hasApiKey: boolean;
+  keySource: "OPENAI_API_KEY";
+  modelSource: "OPENAI_MODEL";
+}
+
 export interface DemoData {
   persons: Person[];
   sourceSnippets: SourceSnippet[];
