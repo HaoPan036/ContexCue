@@ -240,13 +240,11 @@ export type ApiProvider = "openai";
 
 export type ApiSurface = "responses";
 
-export interface ApiRuntimeSettings {
+export interface ApiProviderReservation {
   provider: ApiProvider;
   apiSurface: ApiSurface;
-  model: string | null;
-  hasApiKey: boolean;
-  keySource: "OPENAI_API_KEY";
-  modelSource: "OPENAI_MODEL";
+  status: "reserved";
+  secretHandling: "server_only";
 }
 
 export interface DemoData {

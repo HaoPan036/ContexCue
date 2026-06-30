@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
-import type { ApiRuntimeSettings } from "@/types";
+import type { ApiProviderReservation } from "@/types";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export function GET() {
-  const settings: ApiRuntimeSettings = {
+  const settings: ApiProviderReservation = {
     provider: "openai",
     apiSurface: "responses",
-    model: process.env.OPENAI_MODEL?.trim() || null,
-    hasApiKey: Boolean(process.env.OPENAI_API_KEY?.trim()),
-    keySource: "OPENAI_API_KEY",
-    modelSource: "OPENAI_MODEL"
+    status: "reserved",
+    secretHandling: "server_only"
   };
 
   return NextResponse.json(settings);
