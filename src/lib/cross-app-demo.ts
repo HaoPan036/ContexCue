@@ -15,32 +15,22 @@ export const crossAppSources: AppSource[] = [
       {
         id: "wa-1",
         role: "person_a",
-        text: "Did you see Gemini's new personalized image thing with Google Photos?"
-      },
-      {
-        id: "wa-2",
-        role: "person_a",
-        text: "Everyone is posting AI photo edits again."
+        text: "Gemini can connect to Photos now?"
       },
       {
         id: "wa-3",
         role: "person_a",
-        text: "It looks fun, but I get nervous when tools connect to my photos."
-      },
-      {
-        id: "wa-4",
-        role: "person_a",
-        text: "I don't want a dramatic take. I just want to know if it's actually safe to try."
+        text: "Looks useful. Also a little creepy."
       },
       {
         id: "wu-1",
         role: "user",
-        text: "Yeah, I saw the update. Let me check the details."
+        text: "I'll check what it actually uses."
       },
       {
         id: "wa-5",
         role: "person_a",
-        text: "Can you send me the short version before I decide?",
+        text: "Send me the short version?",
         timestamp: "10:42"
       }
     ]
@@ -86,7 +76,7 @@ export const voiceCommand: VoiceCommand = {
   id: "voice-main",
   label: "Voice trigger",
   transcript:
-    "Hi Jarvis, remember that A is cautious about AI tools that connect to personal photos. For AI news, keep replies practical, sourced, and not hypey.",
+    "Hi Jarvis, remember A is cautious about AI tools connected to personal photos. Keep AI news replies practical, sourced, and not hypey.",
   sampleCommands: [
     "Remember AI photo privacy concern",
     "Use a practical tone for AI news",
@@ -98,7 +88,7 @@ export const memoryOperations: MemoryOperation[] = [
   {
     id: "op-ai-privacy",
     label: "AI photo privacy preference",
-    content: "A is cautious about AI tools that connect to personal photos",
+    content: "A is cautious about AI tools connected to personal photos",
     personId: "person-a",
     sensitivity: "medium",
     ttlDays: 30,
@@ -107,7 +97,7 @@ export const memoryOperations: MemoryOperation[] = [
   {
     id: "op-style-practical",
     label: "Reply style",
-    content: "For A, explain AI news in a practical, low-hype tone",
+    content: "Explain AI news without hype",
     personId: "person-a",
     sensitivity: "low",
     ttlDays: null,
@@ -116,7 +106,7 @@ export const memoryOperations: MemoryOperation[] = [
   {
     id: "op-source-context",
     label: "Source preference",
-    content: "When discussing fast-moving AI news with A, include source context",
+    content: "Include source context",
     personId: "person-a",
     sensitivity: "low",
     ttlDays: null,
@@ -127,7 +117,7 @@ export const memoryOperations: MemoryOperation[] = [
 export const replySuggestion: ReplySuggestion = {
   id: "reply-suggestion-main",
   text:
-    "Short version: Gemini can now personalize image prompts using your interests and connected Google Photos. Google says private photo libraries are not used to train the model, but I would still check what you connect and keep it off if you are unsure. No rush to try it.",
+    "Short version: it can be useful, but check what Photos access is enabled first. Google says Photos data is not used for ads or to train models outside Photos.",
   usedContext: [
     "A is cautious about personal photos",
     "A asked for the short version",
