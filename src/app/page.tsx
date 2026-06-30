@@ -1,5 +1,5 @@
-import { DemoWorkspace } from "@/app/demo/workspace";
+import { CrossAppDemo } from "@/components/cross-app/CrossAppDemo";
 
 export default function HomePage() {
-  return <DemoWorkspace />;
+  return <CrossAppDemo />;
 }

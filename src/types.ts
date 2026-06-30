@@ -39,6 +39,7 @@ export type GateDecision =
 
 export type ReplyStyle =
   | "warm_supportive_low_pressure"
+  | "warm_low_pressure"
   | "task_oriented"
   | "intrusive_interrogation";
 
@@ -103,6 +104,10 @@ export interface MemoryGateDecision {
   ttlDays: number | null;
   requiresConfirmation: boolean;
   rawChatStored: boolean;
+  label?: string;
+  scope?: string;
+  rawAudioStored?: boolean;
+  transcriptStored?: boolean;
 }
 
 export interface StitchedContextLine {
@@ -178,6 +183,57 @@ export interface VoiceTriggerExample {
   nextReplyChange: string;
   privacyReason: string;
   toneMetadataNote: string;
+}
+
+export type AppSourceKind = "wechat_style_chat" | "doubao_style_ai";
+
+export type AppMessageRole = "person_a" | "user" | "assistant" | "system";
+
+export interface AppMessage {
+  id: string;
+  role: AppMessageRole;
+  text: string;
+  timestamp?: string;
+  selected?: boolean;
+  edited?: boolean;
+}
+
+export interface AppSource {
+  id: string;
+  kind: AppSourceKind;
+  label: string;
+  subtitle: string;
+  messages: AppMessage[];
+}
+
+export interface VoiceCommand {
+  id: string;
+  label: string;
+  transcript: string;
+  sampleCommands: string[];
+}
+
+export interface ParsedIntent {
+  id: string;
+  label: string;
+  target: string;
+  summary: string;
+}
+
+export interface MemoryOperation {
+  id: string;
+  label: string;
+  content: string;
+  personId: string;
+  sensitivity: Sensitivity;
+  ttlDays: number | null;
+  requiresConfirmation: boolean;
+}
+
+export interface ReplySuggestion {
+  id: string;
+  text: string;
+  usedContext: string[];
 }
 
 export interface DemoData {

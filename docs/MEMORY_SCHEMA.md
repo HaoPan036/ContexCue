@@ -19,6 +19,42 @@
 
 Source snippets are extraction inputs. V0.1 does not persist raw snippets into demo state.
 
+## AppSource schema
+
+- `id`
+- `kind`: `wechat_style_chat` or `doubao_style_ai`
+- `label`
+- `subtitle`
+- `messages`
+
+## VoiceCommand schema
+
+- `id`
+- `label`
+- `transcript`
+- `sampleCommands`
+
+V0.1 uses predefined transcripts instead of microphone input.
+
+## ParsedIntent schema
+
+- `id`
+- `label`
+- `target`
+- `summary`
+
+Example labels include `save_memory`, `update_reply_preference`, and `save_short_term_memory`.
+
+## MemoryOperation schema
+
+- `id`
+- `label`
+- `content`
+- `personId`
+- `sensitivity`
+- `ttlDays`
+- `requiresConfirmation`
+
 ## MemoryCandidate schema
 
 - `id`

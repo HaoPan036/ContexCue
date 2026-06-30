@@ -2,58 +2,41 @@
 
 ## 0 to 30 seconds: problem
 
-ContextCue is a context layer for social communication. It is not a chat app and not a social network. The problem is that useful context is scattered across private chats, group chats, time, and previous AI feedback choices.
+ContextCue is a background memory layer for personal AI agents. It is not a chat app, voice assistant clone, social network, or automatic sender.
 
-The demo focuses on one thing: stitching scattered, low-signal social fragments into privacy controlled memory for a better reply.
+The demo focuses on one thing: the user gives a lightweight voice instruction while using normal apps, and ContextCue updates controlled memory without interrupting the conversation.
 
 ## 30 to 75 seconds: fragmented sources
 
-Open the Context Workbench. Point to the four source cards:
+Open the root page. Point to the two app mockups:
 
-- Private chat from July 1: Person A mentions stress, Friday availability, quieter places, and avoiding spicy food.
-- Group chat from July 2: Person A may be under presentation pressure.
-- Previous AI feedback: the user preferred warm, low pressure replies and rejected direct interrogation.
-- Today's message: Person A asks about the weekend plan and says they feel tired.
+- WeChat style chat shows Person A mentioning stress, quiet places, avoiding spicy food, and a later tired message.
+- Doubao style AI chat shows the user asking for reply advice and choosing the low pressure option.
 
-Emphasize that raw chat is an input, not a stored memory.
+Emphasize that these are normal app contexts, not a new social app.
 
 ## 75 to 120 seconds: context stitching
 
-Click Run Context Stitching. Walk through Observe and Extract.
+Click Run demo. The voice trigger transcript appears:
 
-The agent extracts structured candidates:
+`Hi Jarvis, remember that A prefers quiet places...`
 
-- Quiet place preference.
-- Avoid spicy food as sensitive short term health context.
-- Academic pressure as short term emotional context.
-- Warm low pressure reply style as user preference.
-- Friday availability as a lightweight commitment.
-- Raw chat transcript as blocked.
+Walk through the parsed intents: save memory, update reply preference, save short term memory.
 
 ## 120 to 165 seconds: MemoryGate
 
-Show MemoryGate decisions.
+Show the compact ContextCue running panel and MemoryGate panel.
 
-Quiet place can be saved long term. Health context requires confirmation and expires after 14 days. Academic pressure expires after 7 days. Raw chat is blocked from storage. Memories are scoped by person and task, so Person B data does not enter Person A's reply.
-
-Open the Memory Library briefly to show approve, edit, ignore, and expire controls.
+Quiet place is saved long term. Spicy food is saved for 14 days and requires confirmation. Pushy reply style becomes a Person A reply preference. Raw audio, transcript, and raw chat are not stored.
 
 ## 165 to 210 seconds: reply and feedback learning
 
-Return to the Context Workbench or Reply Preferences page.
+Show the final reply suggestion under the voice trigger flow.
 
-Show the three reply options:
-
-- Option A: warm, low pressure, context aware.
-- Option B: task oriented.
-- Option C: intrusive.
-
-Select Option A. The selected reply creates a feedback event with selected style, rejected styles, relationship scope, and future instruction. This proves the user remains in control and their choice becomes future context.
-
-Open Voice Trigger Capture. Show that "Hi Jarvis" is not a voice assistant interaction; it is an intentional capture marker. Walk through one preference trigger, one sensitive health trigger, one block instruction, and one tone correction. Point out that raw audio and transcripts are not stored.
+Click Use this reply. The saved feedback event shows `warm_low_pressure` and a future preference for Person A replies to avoid sounding pushy.
 
 ## 210 to 240 seconds: evaluation and roadmap
 
-Open Tests. Show the 16 static cases across stitching, privacy blocking, expiry, person separation, evidence citation, style adaptation, and voice trigger privacy.
+Open FAQ for the deeper explanation, then open Tests if needed.
 
-Close with the roadmap: optional LLM mode, stronger held-out evaluation, consent workflows, expiry review, and local encrypted storage.
+Close with the thesis: ContextCue lets users give lightweight voice instructions while using normal apps, so personal AI agents can remember the right things, forget risky things, and apply the right context at the right moment.

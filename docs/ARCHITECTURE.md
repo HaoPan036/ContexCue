@@ -2,16 +2,25 @@
 
 ## Page structure
 
-- `/`: primary context workbench for sources, agent reasoning, MemoryGate, and reply options.
-- `/demo`: compatibility route for the same workbench.
+- `/`: primary cross-app demo with WeChat-style chat, Doubao-style AI advice, voice trigger, ContextCue status, MemoryGate, and reply suggestion.
+- `/demo`: compatibility route for the same cross-app demo.
 - `/memory-library`: structured memory records with approve, edit, ignore, and expire controls.
 - `/feedback-learning`: reply preference selection and preference signal creation.
-- `/voice-trigger-capture`: simulated "Hi Jarvis" transcript capture for intentional memory, correction, blocking, expiry, and reply preference instructions.
+- `/voice-trigger-capture`: secondary capture inbox retained for inspecting individual simulated voice trigger examples.
 - `/evaluation`: static V0.1 system test suite with 16 cases.
 
 ## Component structure
 
-- `SourceCard`: renders source snippets and raw-chat-not-stored messaging.
+- `AppMockup`: frames app-like mockup surfaces.
+- `WeChatMockup`: renders the Person A chat scenario.
+- `DoubaoMockup`: renders the AI advice and user feedback signal.
+- `VoiceTriggerBar`: simulates the "Hi Jarvis" command.
+- `ContextCueStatus`: compact background agent status panel.
+- `MemoryGatePanel`: compact privacy decisions.
+- `ParsedIntentCard`: transcript, parsed intents, and memory operations.
+- `ReplySuggestionCard`: final reply and compact evidence.
+- `FAQDrawer`: deeper explanation outside the main screen.
+- `SourceCard`: legacy source snippet card.
 - `AgentStepCard`: wraps each agent stage.
 - `MemoryCandidateCard`: shows extracted candidates and optional controls.
 - `MemoryGateDecisionCard`: renders gate decisions, TTL, confirmation, and raw chat policy.
@@ -26,11 +35,11 @@
 
 ## Data flow
 
-1. `src/data/demo-data.json` provides deterministic synthetic data.
-2. `src/lib/demo-data.ts` exposes typed maps and formatting helpers.
-3. Pages and components read demo data directly for mock agent outputs, including simulated voice trigger transcripts.
-4. `useDemoState` loads and persists optional user changes.
-5. User actions update memory record statuses, selected reply, feedback event, and style profile.
+1. `src/lib/cross-app-demo.ts` provides deterministic primary scenario data.
+2. `src/data/demo-data.json` provides legacy structured memory and evaluation fixtures.
+3. The root page reads fixed app messages, voice command, parsed intents, memory operations, gate decisions, reply suggestion, and FAQ content.
+4. User actions update local state and selected structured memory/feedback entries in `localStorage`.
+5. The reset button clears all ContextCue demo keys.
 
 ## State management
 
@@ -40,12 +49,14 @@ The workspace uses simple React state. Browser `localStorage` is used only for:
 - Selected reply option.
 - Feedback event.
 - User style profile.
+- Cross-app memory operations.
+- Cross-app feedback event.
 
 The reset button clears those keys and restores deterministic defaults.
 
 ## Mock mode
 
-Default behavior is deterministic mock mode. Extraction, gate decisions, stitched context, reply options, voice trigger parsing, and evaluation results are precomputed from local JSON so the demo is reliable without setup.
+Default behavior is deterministic mock mode. App messages, voice trigger parsing, MemoryGate decisions, reply suggestion, and evaluation results are precomputed so the demo is reliable without setup.
 
 ## Optional future LLM mode
 

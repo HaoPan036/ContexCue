@@ -7,7 +7,9 @@ export const STORAGE_KEYS = {
   memories: "contextcue.approvedMemories",
   selectedReplyOption: "contextcue.selectedReplyOption",
   feedbackEvent: "contextcue.feedbackEvent",
-  styleProfile: "contextcue.userStyleProfile"
+  styleProfile: "contextcue.userStyleProfile",
+  crossAppMemoryOperations: "contextcue.crossAppMemoryOperations",
+  crossAppFeedbackEvent: "contextcue.crossAppFeedbackEvent"
 } as const;
 
 function loadJson<T>(key: string, fallback: T): T {

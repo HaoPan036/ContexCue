@@ -2,9 +2,9 @@
 
 ## What is ContextCue
 
-ContextCue is a local context workspace for a social context agent with privacy controlled memory.
+ContextCue is a cross-app interaction demo for a social context agent with privacy controlled memory.
 
-It is not a social media replacement, chat client, dating advice app, or daily journal. It is a context layer on top of existing social workflows: it observes scattered fragments, extracts structured memory candidates, applies privacy rules, and helps draft better replies while keeping the user in control.
+It is not a social media replacement, chat client, dating advice app, voice assistant clone, or automatic sender. It is a background memory and context layer for personal AI agents.
 
 ## Why this needs AI
 
@@ -19,32 +19,39 @@ ContextCue centers on AI-shaped context stitching:
 - Cite evidence for each recommendation.
 - Learn from the reply the user actually chooses.
 
-## Case file
+## Cross-app scenario
 
-The synthetic case centers on Person A:
+The primary screen shows two app-style mockups:
 
-- July 1 private chat: Person A mentions stress, a Friday meetup, a quieter place, and avoiding spicy food.
-- July 2 group chat: classmates mention Person A is preparing for a Monday presentation.
-- July 2 AI feedback: the user previously chose a warm, low pressure reply and rejected direct interrogation.
-- New message: Person A asks whether the weekend plan is still happening and says they feel tired.
+- WeChat style chat with Person A.
+- Doubao style AI chat where the user asked for reply advice and selected a low pressure option.
 
-The expected suggestion is warm, context aware, and low pressure:
+The user then triggers ContextCue with a simulated voice command:
 
 ```text
-This week sounds really tiring. We can find a quiet place and avoid spicy food. If you would rather rest, that is totally fine too. We can decide based on how you feel this weekend.
+Hi Jarvis, remember that A prefers quiet places. Also, don't make my reply sound pushy. The spicy food thing is temporary, only keep it for two weeks.
+```
+
+ContextCue parses the instruction, applies MemoryGate, updates structured memory, and suggests a reply for the latest WeChat-style message:
+
+```text
+This week sounds really tiring. We can find a quiet place and avoid spicy food. If you'd rather rest, that's totally fine too. We can decide based on how you feel this weekend.
 ```
 
 ## Core workflow
 
-1. Observe: show the four fragmented sources.
-2. Extract: identify structured memory candidates.
-3. Gate: apply MemoryGate privacy and expiry rules.
-4. Stitch: produce current relationship context with evidence.
-5. Recommend and Learn: show reply options and update the style profile from the user's choice.
+1. Show normal app conversations.
+2. User clicks Run demo to simulate a voice trigger.
+3. Transcript appears.
+4. Parsed instructions appear.
+5. MemoryGate decisions appear.
+6. ContextCue updates memory in the background.
+7. Final reply suggestion appears.
+8. User can click Use this reply to save a feedback event.
 
 ## Voice Trigger Capture
 
-V0.1 includes a simulated Voice Trigger Capture module. Voice is not used as a voice assistant. The phrase "Hi Jarvis" marks an intentional memory capture instruction: remember, correct, block, expire, or update a future reply preference.
+V0.1 uses simulated transcripts instead of microphone input. Voice is not used as a voice assistant. The phrase "Hi Jarvis" marks an intentional memory capture instruction: remember, correct, block, expire, or update a future reply preference.
 
 The workspace uses fixed transcripts instead of real microphone input. It shows each transcript, parsed intent, extracted candidate, MemoryGate decision, confirmation requirement, audio/transcript storage status, and how the instruction changes the next reply.
 
@@ -64,6 +71,10 @@ Every record has person scope, task scope, evidence, privacy level, status, allo
 
 The TypeScript model includes:
 
+- `AppSource`
+- `VoiceCommand`
+- `ParsedIntent`
+- `MemoryOperation`
 - `Person`
 - `SourceSnippet`
 - `MemoryCandidate`
@@ -71,10 +82,11 @@ The TypeScript model includes:
 - `MemoryGateDecision`
 - `AgentRun`
 - `ReplyOption`
+- `ReplySuggestion`
 - `FeedbackEvent`
 - `UserStyleProfile`
 
-Synthetic data lives in `src/data/demo-data.json`.
+Synthetic legacy data lives in `src/data/demo-data.json`. The primary cross-app demo data lives in `src/lib/cross-app-demo.ts`.
 
 ## Privacy assumptions
 
