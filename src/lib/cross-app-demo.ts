@@ -117,7 +117,7 @@ export const memoryOperations: MemoryOperation[] = [
 export const replySuggestion: ReplySuggestion = {
   id: "reply-suggestion-main",
   text:
-    "Short version: it can be useful, but check what Photos access is enabled first. Google says Photos data is not used for ads or to train models outside Photos.",
+    "Short version: useful, but check Photos access first. Google says Photos data is not used for ads or outside-Photos model training.",
   usedContext: [
     "A is cautious about personal photos",
     "A asked for the short version",

@@ -11,21 +11,19 @@ import {
   Paperclip,
   PenLine,
   Phone,
-  RotateCcw,
   Send,
+  Smile,
   Sparkles,
   Video
 } from "lucide-react";
-import { FAQDrawer } from "@/components/cross-app/FAQDrawer";
 import {
   crossAppSources,
-  faqItems,
   memoryOperations,
   replySuggestion
 } from "@/lib/cross-app-demo";
-import { STORAGE_KEYS, clearDemoStorage } from "@/lib/storage";
+import { STORAGE_KEYS } from "@/lib/storage";
 
-type MomentMode = "idle" | "manual" | "assist" | "used";
+type MomentMode = "manual" | "assist" | "used";
 
 const messageTimes: Record<string, string> = {
   "wa-1": "10:31",
@@ -33,6 +31,12 @@ const messageTimes: Record<string, string> = {
   "wu-1": "10:39",
   "wa-5": "10:42"
 };
+
+const cueSignals = [
+  "A: cautious about photo access",
+  "Tone: practical, no hype",
+  "Gate: confirm before saving"
+];
 
 function saveCrossAppState(feedbackUsed: boolean) {
   if (typeof window === "undefined") {
@@ -55,15 +59,9 @@ function saveCrossAppState(feedbackUsed: boolean) {
 }
 
 export function CrossAppDemo() {
-  const [mode, setMode] = useState<MomentMode>("idle");
-  const [faqOpen, setFaqOpen] = useState(false);
+  const [mode, setMode] = useState<MomentMode>("assist");
   const whatsAppSource = crossAppSources.find((source) => source.kind === "whatsapp_chat");
   const cueActive = mode === "assist" || mode === "used";
-
-  const reset = useCallback(() => {
-    clearDemoStorage();
-    setMode("idle");
-  }, []);
 
   const askContextCue = useCallback(() => {
     setMode("assist");
@@ -77,17 +75,19 @@ export function CrossAppDemo() {
 
   return (
     <main className="h-[calc(100vh-64px)] overflow-hidden bg-[#f5f2ec] text-[#111111]">
-      <section className="relative mx-auto grid h-full max-w-7xl grid-cols-[minmax(300px,0.86fr)_minmax(340px,0.72fr)] items-center gap-8 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="relative mx-auto grid h-full max-w-7xl grid-cols-[minmax(320px,0.88fr)_minmax(360px,0.72fr)] items-center gap-8 px-5 py-5 sm:px-6 lg:px-10">
         <div className="relative z-10 max-w-xl">
-          <p className="text-xs font-semibold uppercase tracking-normal text-[#6b675f]">Private memory for personal AI</p>
-          <h1 className="mt-5 text-6xl font-semibold leading-none text-[#111111] sm:text-7xl lg:text-8xl">
+          <p className="text-xs font-semibold uppercase tracking-normal text-[#746f65]">
+            From scattered context to controlled memory
+          </p>
+          <h1 className="mt-5 text-6xl font-semibold leading-none text-[#111111] sm:text-7xl lg:text-[6.7rem]">
             ContextCue
           </h1>
-          <p className="mt-5 max-w-md text-xl leading-8 text-[#3f3b34] sm:text-2xl">
-            Remember only what you mean.
+          <p className="mt-6 max-w-md text-2xl leading-9 text-[#312d27]">
+            Before you reply, see what context actually matters.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-9 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={askContextCue}
@@ -104,31 +104,24 @@ export function CrossAppDemo() {
               <PenLine className="h-4 w-4" aria-hidden="true" />
               Reply myself
             </button>
-            <FAQDrawer open={faqOpen} onOpen={() => setFaqOpen(true)} onClose={() => setFaqOpen(false)} items={faqItems} />
-            <button
-              type="button"
-              onClick={reset}
-              className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d8d1c5] bg-white/70 text-[#5b554c] shadow-sm transition hover:bg-white"
-              title="Reset"
-            >
-              <RotateCcw className="h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Reset</span>
-            </button>
           </div>
 
-          <div className="mt-10 grid max-w-sm grid-cols-3 gap-2 text-xs font-semibold uppercase tracking-normal text-[#6b675f]">
-            <span>Capture</span>
-            <span>Gate</span>
-            <span>Reply</span>
+          <div className="mt-10 flex max-w-md flex-wrap gap-2 text-xs font-semibold text-[#6b675f]">
+            {["No raw chat", "Scoped memory", "Evidence shown"].map((item) => (
+              <span key={item} className="rounded-full border border-[#d8d1c5] bg-white/50 px-3 py-1">
+                {item}
+              </span>
+            ))}
           </div>
         </div>
 
         <div className="relative z-0 flex h-full min-h-0 items-center justify-center">
-          <div className="absolute inset-y-10 left-0 right-4 rounded-[2.5rem] bg-[#e6dfd3]" />
+          <div className="absolute inset-y-9 left-0 right-5 rounded-[2.75rem] bg-[#e5ddd1]" />
 
-          <div className="relative w-full max-w-[398px] rounded-[2.2rem] border border-black/10 bg-[#111b21] p-2 shadow-[0_30px_90px_rgba(42,36,27,0.28)]">
-            <div className="overflow-hidden rounded-[1.85rem] bg-[#efeae2]">
-              <div className="flex items-center justify-between bg-[#075e54] px-5 pb-1.5 pt-2.5 text-xs font-medium text-white/95">
+          <div className="relative w-full max-w-[408px] rounded-[2.35rem] border border-black/10 bg-[#101820] p-2 shadow-[0_34px_100px_rgba(42,36,27,0.31)]">
+            <div className="absolute left-1/2 top-3 z-20 h-1.5 w-20 -translate-x-1/2 rounded-full bg-black/35" />
+            <div className="overflow-hidden rounded-[1.95rem] bg-[#efeae2]">
+              <div className="flex items-center justify-between bg-[#075e54] px-5 pb-1.5 pt-3 text-xs font-medium text-white/95">
                 <span>10:42</span>
                 <span>5G  82%</span>
               </div>
@@ -151,10 +144,14 @@ export function CrossAppDemo() {
                 </div>
               </header>
 
-              <div className="relative flex h-[clamp(390px,calc(100vh-220px),510px)] flex-col justify-between overflow-hidden">
+              <div className="relative flex h-[clamp(410px,calc(100vh-214px),522px)] flex-col justify-between overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_1px_1px,#111b21_1px,transparent_0)] [background-size:18px_18px]" />
 
                 <div className="relative space-y-2 px-3 py-3">
+                  <div className="mx-auto mb-2 w-fit rounded-md bg-[#fff3bf] px-3 py-1 text-[11px] font-medium text-[#6b5f3c] shadow-sm">
+                    Today
+                  </div>
+
                   {whatsAppSource?.messages.map((message) => {
                     const fromUser = message.role === "user";
                     const latest = message.id === "wa-5";
@@ -163,7 +160,7 @@ export function CrossAppDemo() {
                       <div key={message.id} className={`flex ${fromUser ? "justify-end" : "justify-start"}`}>
                         <div className={`max-w-[82%] ${latest ? "relative" : ""}`}>
                           <div
-                            className={`rounded-lg px-3 py-2 text-[14.5px] leading-5 shadow-sm ${
+                            className={`relative rounded-lg px-3 py-2 text-[14.5px] leading-5 shadow-sm ${
                               fromUser
                                 ? "rounded-tr-none bg-[#dcf8c6] text-[#111b21]"
                                 : latest
@@ -171,6 +168,13 @@ export function CrossAppDemo() {
                                   : "rounded-tl-none bg-white text-[#111b21]"
                             }`}
                           >
+                            <span
+                              className={`absolute top-0 h-0 w-0 border-b-[8px] border-b-transparent ${
+                                fromUser
+                                  ? "-right-2 border-l-[8px] border-l-[#dcf8c6]"
+                                  : "-left-2 border-r-[8px] border-r-white"
+                              }`}
+                            />
                             {message.text}
                             <span className="ml-2 inline-flex translate-y-1 items-center gap-1 text-[10px] text-[#667781]">
                               {messageTimes[message.id] ?? message.timestamp}
@@ -187,7 +191,7 @@ export function CrossAppDemo() {
                 </div>
 
                 {cueActive ? (
-                  <div className="absolute inset-x-3 bottom-[68px] rounded-2xl bg-[#111b21]/95 p-3 text-white shadow-[0_18px_50px_rgba(17,27,33,0.34)] backdrop-blur">
+                  <div className="absolute inset-x-3 bottom-[70px] rounded-[1.25rem] border border-white/10 bg-[#111b21]/96 p-3 text-white shadow-[0_18px_50px_rgba(17,27,33,0.34)] backdrop-blur">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <Sparkles className="h-4 w-4 text-[#25d366]" aria-hidden="true" />
@@ -197,14 +201,14 @@ export function CrossAppDemo() {
                         {mode === "used" ? "saved" : "ready"}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-white/88">{replySuggestion.text}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {memoryOperations.slice(0, 3).map((operation) => (
-                        <span key={operation.id} className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70">
-                          {operation.label}
+                    <div className="mt-3 grid gap-1.5 text-xs text-white/75">
+                      {cueSignals.map((signal) => (
+                        <span key={signal} className="rounded-full bg-white/10 px-2.5 py-1">
+                          {signal}
                         </span>
                       ))}
                     </div>
+                    <p className="mt-3 text-sm leading-6 text-white/90">{replySuggestion.text}</p>
                     <button
                       type="button"
                       onClick={useReply}
@@ -219,6 +223,7 @@ export function CrossAppDemo() {
                 <div className="relative p-2">
                   <div className="flex items-center gap-2">
                     <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm">
+                      <Smile className="h-5 w-5 shrink-0 text-[#667781]" aria-hidden="true" />
                       <input
                         className="focus-ring min-w-0 flex-1 border-0 bg-transparent text-sm text-[#111b21] outline-none"
                         placeholder={mode === "manual" ? "Message" : "Type a message"}
@@ -244,7 +249,6 @@ export function CrossAppDemo() {
             </div>
           </div>
         </div>
-
       </section>
     </main>
   );
