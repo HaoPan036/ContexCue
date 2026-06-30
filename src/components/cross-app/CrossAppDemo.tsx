@@ -116,12 +116,16 @@ export function CrossAppDemo() {
         </div>
 
         <div className="relative z-0 flex h-full min-h-0 items-center justify-center">
-          <div className="absolute inset-y-9 left-0 right-5 rounded-[2.75rem] bg-[#e5ddd1]" />
+          <div className="absolute inset-y-9 left-6 right-10 rounded-[3rem] bg-[#e5ddd1]" />
 
-          <div className="relative w-full max-w-[408px] rounded-[2.35rem] border border-black/10 bg-[#101820] p-2 shadow-[0_34px_100px_rgba(42,36,27,0.31)]">
-            <div className="absolute left-1/2 top-3 z-20 h-1.5 w-20 -translate-x-1/2 rounded-full bg-black/35" />
-            <div className="overflow-hidden rounded-[1.95rem] bg-[#efeae2]">
-              <div className="flex items-center justify-between bg-[#075e54] px-5 pb-1.5 pt-3 text-xs font-medium text-white/95">
+          <div className="relative h-[min(calc(100vh-96px),720px)] aspect-[719/1500] rounded-[3rem] border border-[#d8d1c5] bg-[#d9d4cb] p-[7px] shadow-[0_34px_100px_rgba(42,36,27,0.31)]">
+            <div className="absolute -left-1 top-28 h-14 w-1 rounded-l-full bg-[#c7c1b8]" />
+            <div className="absolute -right-1 top-40 h-20 w-1 rounded-r-full bg-[#c7c1b8]" />
+            <div className="h-full overflow-hidden rounded-[2.62rem] bg-[#efeae2] ring-4 ring-[#111820]">
+              <div className="relative flex items-center justify-between bg-[#075e54] px-5 pb-2 pt-5 text-xs font-medium text-white/95">
+                <div className="absolute left-1/2 top-4 h-8 w-[7.35rem] -translate-x-1/2 rounded-full bg-[#071014] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+                  <span className="absolute right-2.5 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-[#17262c]" />
+                </div>
                 <span>10:42</span>
                 <span>5G  82%</span>
               </div>
@@ -144,10 +148,10 @@ export function CrossAppDemo() {
                 </div>
               </header>
 
-              <div className="relative flex h-[clamp(410px,calc(100vh-214px),522px)] flex-col justify-between overflow-hidden">
+              <div className="relative flex h-[calc(100%_-_88px)] flex-col overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_1px_1px,#111b21_1px,transparent_0)] [background-size:18px_18px]" />
 
-                <div className="relative space-y-2 px-3 py-3">
+                <div className="relative min-h-0 flex-1 space-y-2 overflow-hidden px-3 py-3">
                   <div className="mx-auto mb-2 w-fit rounded-md bg-[#fff3bf] px-3 py-1 text-[11px] font-medium text-[#6b5f3c] shadow-sm">
                     Today
                   </div>
@@ -191,24 +195,24 @@ export function CrossAppDemo() {
                 </div>
 
                 {cueActive ? (
-                  <div className="absolute inset-x-3 bottom-[70px] rounded-[1.25rem] border border-white/10 bg-[#111b21]/96 p-3 text-white shadow-[0_18px_50px_rgba(17,27,33,0.34)] backdrop-blur">
+                  <div className="relative mx-2 mb-2 rounded-[1.15rem] border border-[#d5d7d8] bg-white p-3 text-[#111b21] shadow-sm">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-[#25d366]" aria-hidden="true" />
+                        <Sparkles className="h-4 w-4 text-[#128c7e]" aria-hidden="true" />
                         <span className="text-sm font-semibold">ContextCue</span>
                       </div>
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/75">
+                      <span className="rounded-full bg-[#e7f8ee] px-2 py-0.5 text-xs font-semibold text-[#128c7e]">
                         {mode === "used" ? "saved" : "ready"}
                       </span>
                     </div>
-                    <div className="mt-3 grid gap-1.5 text-xs text-white/75">
+                    <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-[#54656f]">
                       {cueSignals.map((signal) => (
-                        <span key={signal} className="rounded-full bg-white/10 px-2.5 py-1">
+                        <span key={signal} className="rounded-full bg-[#f0f2f5] px-2 py-1">
                           {signal}
                         </span>
                       ))}
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-white/90">{replySuggestion.text}</p>
+                    <p className="mt-2 text-[13px] leading-5 text-[#1f2c33]">{replySuggestion.text}</p>
                     <button
                       type="button"
                       onClick={useReply}
