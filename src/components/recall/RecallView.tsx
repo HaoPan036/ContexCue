@@ -36,7 +36,7 @@ function evaluateMemoryRecord(record: MemoryRecord, now: Date): RecallDecision {
     return { kind: "excluded", record, reason: "已过期(TTL 到期)" };
   }
 
-  if (record.personId !== activePersonId) {
+  if (record.personId !== "self" && record.personId !== activePersonId) {
     return { kind: "excluded", record, reason: "作用域不匹配(属于其他联系人)" };
   }
 
@@ -82,6 +82,13 @@ function AdoptedMemoryCard({ record }: { record: MemoryRecord }) {
             Adopted / {titleCase(record.type)}
           </p>
           <h3 className="mt-1 text-base font-semibold leading-6 text-slate-950">{record.content}</h3>
+          {record.beliefStatus ? (
+            <span className="mt-2 inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
+              {record.beliefStatus === "external_view"
+                ? "reference, not your view"
+                : titleCase(record.beliefStatus)}
+            </span>
+          ) : null}
         </div>
       </div>
 

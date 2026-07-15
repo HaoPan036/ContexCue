@@ -3,6 +3,14 @@
 import { demoData } from "@/lib/demo-data";
 import type { FeedbackEvent, MemoryRecord, ReplyOption, ReplyStyle, UserStyleProfile } from "@/types";
 
+type ProvenanceFields = Pick<
+  MemoryRecord,
+  "origin" | "stance" | "cognitiveType" | "beliefStatus" | "revisionHistory"
+>;
+
+type PersistedMemoryRecord = Omit<MemoryRecord, keyof ProvenanceFields> &
+  Partial<ProvenanceFields>;
+
 export const STORAGE_KEYS = {
   memories: "contextcue.approvedMemories",
   selectedReplyOption: "contextcue.selectedReplyOption",
@@ -45,8 +53,22 @@ export function clearDemoStorage() {
   Object.values(STORAGE_KEYS).forEach((key) => window.localStorage.removeItem(key));
 }
 
+export function withProvenanceDefaults(record: PersistedMemoryRecord): MemoryRecord {
+  return {
+    ...record,
+    origin: record.origin ?? "other_person",
+    stance: record.stance ?? "undecided",
+    cognitiveType: record.cognitiveType ?? "fact_claim",
+    beliefStatus: record.beliefStatus ?? "external_view",
+    revisionHistory: record.revisionHistory ?? []
+  };
+}
+
 export function loadMemoryRecords() {
-  return loadJson<MemoryRecord[]>(STORAGE_KEYS.memories, demoData.memoryRecords);
+  return loadJson<PersistedMemoryRecord[]>(
+    STORAGE_KEYS.memories,
+    demoData.memoryRecords
+  ).map(withProvenanceDefaults);
 }
 
 export function saveMemoryRecords(records: MemoryRecord[]) {

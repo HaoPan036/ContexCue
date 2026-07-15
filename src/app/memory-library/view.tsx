@@ -6,7 +6,7 @@ import { PrivacyBadge } from "@/components/PrivacyBadge";
 import { useDemoState } from "@/hooks/useDemoState";
 
 export function MemoryLibrary() {
-  const { memoryRecords, updateMemoryStatus, editMemoryContent } = useDemoState();
+  const { memoryRecords, updateMemoryStatus, editMemoryContent, reaffirmMemory } = useDemoState();
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -49,6 +49,7 @@ export function MemoryLibrary() {
             record={record}
             onStatusChange={(status) => updateMemoryStatus(record.id, status)}
             onEdit={(content) => editMemoryContent(record.id, content)}
+            onReaffirm={() => reaffirmMemory(record.id)}
           />
         ))}
       </div>

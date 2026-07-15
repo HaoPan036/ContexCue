@@ -4,15 +4,28 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Clock, ExternalLink, Mic2, RefreshCw, ShieldCheck, Trash2, X } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { promotionGate, type PromotionDecision } from "@/lib/promotion-gate";
 import { extractFromTranscript, type VoiceExtractionResult } from "@/lib/voice-extraction";
 import { loadMemoryRecords, saveMemoryRecords } from "@/lib/storage";
-import type { MemoryRecord, PrivacyLevel } from "@/types";
+import type { FragmentOrigin, MemoryRecord, PrivacyLevel, UserStance } from "@/types";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 
 type Stage = "idle" | "listening" | "extracted" | "confirming" | "saved" | "discarded";
 
 const CONFIRM_WORDS = ["confirm", "yes"];
 const DISCARD_WORDS = ["discard", "no", "cancel"];
+const ORIGIN_OPTIONS: Array<{ label: string; value: FragmentOrigin }> = [
+  { label: "Mine", value: "self" },
+  { label: "An AI's", value: "ai_output" },
+  { label: "Someone else's", value: "other_person" },
+  { label: "From content I read or watched", value: "external_content" }
+];
+const STANCE_OPTIONS: Array<{ label: string; value: UserStance }> = [
+  { label: "Endorse", value: "endorsed" },
+  { label: "Not sure", value: "undecided" },
+  { label: "Skeptical", value: "skeptical" },
+  { label: "Reject", value: "rejected" }
+];
 
 function stageLabel(stage: Stage) {
   switch (stage) {
@@ -55,14 +68,32 @@ function privacyLevelForSensitivity(sensitivity: VoiceExtractionResult["sensitiv
   return "normal";
 }
 
-function buildMemoryRecord(result: VoiceExtractionResult, transcript: string): MemoryRecord {
+function buildMemoryRecord(
+  result: VoiceExtractionResult,
+  transcript: string,
+  origin: FragmentOrigin,
+  stance: UserStance,
+  decision: PromotionDecision
+): MemoryRecord {
   const createdAt = new Date().toISOString();
 
   return {
     id: `memory-voice-${Date.now()}`,
-    personId: "person-a",
+    personId: origin === "other_person" ? "person-a" : "self",
     type: result.sensitivity === "high" ? "temporary_health_context" : "preference",
     content: result.extractedContent,
+    origin,
+    stance,
+    cognitiveType: "fact_claim",
+    beliefStatus: decision.beliefStatus,
+    revisionHistory: [
+      {
+        at: createdAt,
+        from: decision.beliefStatus,
+        to: decision.beliefStatus,
+        note: `Initial capture: ${decision.ruleFired}`
+      }
+    ],
     evidence: transcript,
     sourceSnippetIds: [],
     createdAt,
@@ -76,9 +107,9 @@ function buildMemoryRecord(result: VoiceExtractionResult, transcript: string): M
   };
 }
 
-function containsAnyPhrase(value: string, phrases: string[]) {
-  const lowerValue = value.toLowerCase();
-  return phrases.some((phrase) => lowerValue.includes(phrase));
+function containsAnyWord(value: string, words: string[]) {
+  const tokens = new Set(value.toLowerCase().match(/[a-z]+/g) ?? []);
+  return words.some((word) => tokens.has(word));
 }
 
 export function VoiceGateCard() {
@@ -97,6 +128,9 @@ export function VoiceGateCard() {
   const [capturedTranscript, setCapturedTranscript] = useState("");
   const [savedRecord, setSavedRecord] = useState<MemoryRecord | null>(null);
   const [localMessage, setLocalMessage] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<FragmentOrigin | null>(null);
+  const [stance, setStance] = useState<UserStance | null>(null);
+  const [confirmationReady, setConfirmationReady] = useState(false);
   const confirmationStartedRef = useRef(false);
   const savedRecordRef = useRef<MemoryRecord | null>(null);
   const startTimerRef = useRef<number | null>(null);
@@ -105,8 +139,12 @@ export function VoiceGateCard() {
     () => [transcript, interimTranscript].filter(Boolean).join(" ").trim(),
     [interimTranscript, transcript]
   );
+  const promotionDecision = useMemo(
+    () => (origin && stance ? promotionGate({ origin, stance, isReaffirmation: false }) : null),
+    [origin, stance]
+  );
 
-  const confirmationTranscript = stage === "confirming" ? liveTranscript : "";
+  const confirmationTranscript = stage === "confirming" && confirmationReady ? liveTranscript : "";
   const transcriptPanelText = stage === "confirming" ? liveTranscript : capturedTranscript || liveTranscript;
 
   const resetFlow = useCallback(() => {
@@ -115,6 +153,7 @@ export function VoiceGateCard() {
       startTimerRef.current = null;
     }
 
+    setConfirmationReady(false);
     resetSpeech();
     confirmationStartedRef.current = false;
     savedRecordRef.current = null;
@@ -123,6 +162,8 @@ export function VoiceGateCard() {
     setCapturedTranscript("");
     setSavedRecord(null);
     setLocalMessage(null);
+    setOrigin(null);
+    setStance(null);
   }, [resetSpeech]);
 
   const startListening = useCallback(() => {
@@ -132,11 +173,14 @@ export function VoiceGateCard() {
 
     savedRecordRef.current = null;
     confirmationStartedRef.current = false;
+    setConfirmationReady(false);
     setStage("listening");
     setExtractionResult(null);
     setCapturedTranscript("");
     setSavedRecord(null);
     setLocalMessage(null);
+    setOrigin(null);
+    setStance(null);
     resetSpeech();
 
     startTimerRef.current = window.setTimeout(() => {
@@ -164,7 +208,7 @@ export function VoiceGateCard() {
   );
 
   const saveExtraction = useCallback(() => {
-    if (!extractionResult) {
+    if (!extractionResult || !origin || !stance || !promotionDecision) {
       return;
     }
 
@@ -173,15 +217,17 @@ export function VoiceGateCard() {
       return;
     }
 
-    const record = buildMemoryRecord(extractionResult, capturedTranscript);
+    const record = buildMemoryRecord(extractionResult, capturedTranscript, origin, stance, promotionDecision);
     saveMemoryRecords([...loadMemoryRecords(), record]);
     savedRecordRef.current = record;
     setSavedRecord(record);
+    setConfirmationReady(false);
     stopSpeech();
     setStage("saved");
-  }, [capturedTranscript, extractionResult, stopSpeech]);
+  }, [capturedTranscript, extractionResult, origin, promotionDecision, stance, stopSpeech]);
 
   const discardExtraction = useCallback(() => {
+    setConfirmationReady(false);
     stopSpeech();
     setStage("discarded");
   }, [stopSpeech]);
@@ -219,7 +265,7 @@ export function VoiceGateCard() {
   }, [finishExtraction, liveTranscript, stage]);
 
   useEffect(() => {
-    if (stage !== "extracted" || !extractionResult) {
+    if (stage !== "extracted" || !extractionResult || !origin || !stance || !promotionDecision) {
       return;
     }
 
@@ -233,11 +279,12 @@ export function VoiceGateCard() {
     }, 2000);
 
     return () => window.clearTimeout(timer);
-  }, [extractionResult, saveExtraction, stage]);
+  }, [extractionResult, origin, promotionDecision, saveExtraction, stage, stance]);
 
   useEffect(() => {
     if (stage !== "confirming") {
       confirmationStartedRef.current = false;
+      setConfirmationReady(false);
       return;
     }
 
@@ -246,9 +293,11 @@ export function VoiceGateCard() {
     }
 
     confirmationStartedRef.current = true;
+    setConfirmationReady(false);
     resetSpeech();
 
     const timer = window.setTimeout(() => {
+      setConfirmationReady(true);
       startSpeech();
     }, 150);
 
@@ -256,19 +305,19 @@ export function VoiceGateCard() {
   }, [resetSpeech, stage, startSpeech]);
 
   useEffect(() => {
-    if (stage !== "confirming" || !confirmationTranscript) {
+    if (stage !== "confirming" || !confirmationReady || !confirmationTranscript) {
       return;
     }
 
-    if (containsAnyPhrase(confirmationTranscript, CONFIRM_WORDS)) {
+    if (containsAnyWord(confirmationTranscript, CONFIRM_WORDS)) {
       saveExtraction();
       return;
     }
 
-    if (containsAnyPhrase(confirmationTranscript, DISCARD_WORDS)) {
+    if (containsAnyWord(confirmationTranscript, DISCARD_WORDS)) {
       discardExtraction();
     }
-  }, [confirmationTranscript, discardExtraction, saveExtraction, stage]);
+  }, [confirmationReady, confirmationTranscript, discardExtraction, saveExtraction, stage]);
 
   if (!supported) {
     return (
@@ -342,6 +391,17 @@ export function VoiceGateCard() {
                 Cancel
               </button>
             </>
+          ) : null}
+
+          {stage === "extracted" ? (
+            <button
+              type="button"
+              onClick={discardExtraction}
+              className="focus-ring inline-flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              Discard
+            </button>
           ) : null}
 
           {stage === "confirming" ? (
@@ -465,6 +525,67 @@ export function VoiceGateCard() {
                 </dd>
               </div>
               <div>
+                <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Whose view is this?</dt>
+                <dd className="mt-2 flex flex-wrap gap-2">
+                  {ORIGIN_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={origin === option.value}
+                      disabled={stage !== "extracted"}
+                      onClick={() => setOrigin(option.value)}
+                      className={`focus-ring min-h-9 rounded-md border px-3 py-2 text-left text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-70 ${
+                        origin === option.value
+                          ? "border-indigo-300 bg-indigo-50 text-indigo-800"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Your stance right now?</dt>
+                <dd className="mt-2 flex flex-wrap gap-2">
+                  {STANCE_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={stance === option.value}
+                      disabled={stage !== "extracted"}
+                      onClick={() => setStance(option.value)}
+                      className={`focus-ring min-h-9 rounded-md border px-3 py-2 text-left text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-70 ${
+                        stance === option.value
+                          ? "border-indigo-300 bg-indigo-50 text-indigo-800"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </dd>
+              </div>
+              {promotionDecision ? (
+                <>
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Belief status</dt>
+                    <dd className="mt-1 font-mono text-xs font-semibold text-indigo-800">
+                      {promotionDecision.beliefStatus}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Rule fired</dt>
+                    <dd className="mt-1 leading-6 text-slate-800">{promotionDecision.ruleFired}</dd>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Promotion decision</dt>
+                  <dd className="mt-1 leading-6 text-slate-500">Select an origin and stance to continue.</dd>
+                </div>
+              )}
+              <div>
                 <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">TTL</dt>
                 <dd className="mt-1">
                   {extractionResult.suggestedTtlDays ? `${extractionResult.suggestedTtlDays} days` : "No automatic expiry"}
@@ -498,7 +619,8 @@ export function VoiceGateCard() {
 
             {stage === "saved" && savedRecord ? (
               <div className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm leading-6 text-emerald-900">
-                Saved as {savedRecord.type.replaceAll("_", " ")} for Person A. The transcript text is stored as evidence.
+                Saved as {savedRecord.type.replaceAll("_", " ")} for {savedRecord.personId === "person-a" ? "Person A" : "you"}.
+                The transcript text is stored as evidence.
               </div>
             ) : null}
           </section>

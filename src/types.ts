@@ -112,11 +112,11 @@ export interface MemoryRecord {
   personId: string;
   type: MemoryType;
   content: string;
-  origin?: FragmentOrigin;
-  stance?: UserStance;
-  cognitiveType?: CognitiveType;
-  beliefStatus?: BeliefStatus;
-  revisionHistory?: Array<{
+  origin: FragmentOrigin;
+  stance: UserStance;
+  cognitiveType: CognitiveType;
+  beliefStatus: BeliefStatus;
+  revisionHistory: Array<{
     at: string;
     from: BeliefStatus;
     to: BeliefStatus;

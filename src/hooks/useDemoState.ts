@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { demoData } from "@/lib/demo-data";
+import { promotionGate } from "@/lib/promotion-gate";
 import {
   buildFeedbackEvent,
   buildStyleProfile,
@@ -52,6 +53,45 @@ export function useDemoState() {
     });
   }, []);
 
+  const reaffirmMemory = useCallback((memoryId: string) => {
+    let didReaffirm = false;
+    const next = memoryRecords.map((record) => {
+      if (record.id !== memoryId || record.beliefStatus !== "candidate_belief") {
+        return record;
+      }
+
+      const decision = promotionGate({
+        origin: record.origin,
+        stance: "endorsed",
+        isReaffirmation: true
+      });
+      const at = new Date().toISOString();
+      didReaffirm = true;
+
+      return {
+        ...record,
+        stance: "endorsed" as const,
+        beliefStatus: decision.beliefStatus,
+        revisionHistory: [
+          ...record.revisionHistory,
+          {
+            at,
+            from: record.beliefStatus,
+            to: decision.beliefStatus,
+            note: decision.ruleFired
+          }
+        ]
+      };
+    });
+
+    if (!didReaffirm) {
+      return;
+    }
+
+    setMemoryRecords(next);
+    saveMemoryRecords(next);
+  }, [memoryRecords]);
+
   const selectReplyOption = useCallback((reply: ReplyOption, editedText?: string) => {
     const finalText = editedText?.trim() ? editedText.trim() : reply.text;
     const event = buildFeedbackEvent(reply, finalText);
@@ -87,6 +127,7 @@ export function useDemoState() {
     styleProfile,
     updateMemoryStatus,
     editMemoryContent,
+    reaffirmMemory,
     selectReplyOption,
     resetDemo
   };
