@@ -4,13 +4,38 @@ export type SourceType =
   | "ai_feedback"
   | "new_message";
 
+export type FragmentOrigin =
+  | "self"
+  | "other_person"
+  | "ai_output"
+  | "external_content";
+
+export type UserStance =
+  | "endorsed"
+  | "skeptical"
+  | "rejected"
+  | "undecided";
+
+export type CognitiveType =
+  | "fact_claim"
+  | "value_judgment"
+  | "hypothesis"
+  | "question";
+
+export type BeliefStatus =
+  | "external_view"
+  | "candidate_belief"
+  | "user_belief";
+
 export type MemoryType =
   | "preference"
   | "temporary_health_context"
   | "emotional_context"
   | "commitment"
   | "relationship_signal"
-  | "user_reply_style";
+  | "user_reply_style"
+  | "user_principle"
+  | "world_judgment";
 
 export type Sensitivity = "low" | "medium" | "high";
 
@@ -87,6 +112,16 @@ export interface MemoryRecord {
   personId: string;
   type: MemoryType;
   content: string;
+  origin?: FragmentOrigin;
+  stance?: UserStance;
+  cognitiveType?: CognitiveType;
+  beliefStatus?: BeliefStatus;
+  revisionHistory?: Array<{
+    at: string;
+    from: BeliefStatus;
+    to: BeliefStatus;
+    note: string;
+  }>;
   evidence: string;
   sourceSnippetIds: string[];
   createdAt: string;
