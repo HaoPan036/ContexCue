@@ -10,6 +10,15 @@ export type FragmentOrigin =
   | "ai_output"
   | "external_content";
 
+export type FragmentSource =
+  | "ai_output"
+  | "conversation"
+  | "own_output"
+  | "external_content"
+  | "quick_note";
+
+export type FragmentStatus = "inbox" | "reviewed" | "dismissed";
+
 export type UserStance =
   | "endorsed"
   | "skeptical"
@@ -26,6 +35,20 @@ export type BeliefStatus =
   | "external_view"
   | "candidate_belief"
   | "user_belief";
+
+export interface CognitiveFragment {
+  id: string;
+  content: string;
+  source: FragmentSource;
+  sourceContext: string | null;
+  capturedAt: string;
+  status: FragmentStatus;
+  origin: FragmentOrigin;
+  stance: UserStance | null;
+  cognitiveType: CognitiveType;
+  reviewedAt: string | null;
+  linkedMemoryId: string | null;
+}
 
 export type MemoryType =
   | "preference"

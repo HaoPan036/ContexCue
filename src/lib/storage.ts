@@ -1,7 +1,15 @@
 "use client";
 
 import { demoData } from "@/lib/demo-data";
-import type { FeedbackEvent, MemoryRecord, ReplyOption, ReplyStyle, UserStyleProfile } from "@/types";
+import { buildDemoCognitiveFragments } from "@/lib/cognitive-loop";
+import type {
+  CognitiveFragment,
+  FeedbackEvent,
+  MemoryRecord,
+  ReplyOption,
+  ReplyStyle,
+  UserStyleProfile
+} from "@/types";
 
 type ProvenanceFields = Pick<
   MemoryRecord,
@@ -13,6 +21,7 @@ type PersistedMemoryRecord = Omit<MemoryRecord, keyof ProvenanceFields> &
 
 export const STORAGE_KEYS = {
   memories: "contextcue.approvedMemories",
+  cognitiveFragments: "contextcue.cognitiveFragments",
   selectedReplyOption: "contextcue.selectedReplyOption",
   feedbackEvent: "contextcue.feedbackEvent",
   styleProfile: "contextcue.userStyleProfile",
@@ -73,6 +82,105 @@ export function loadMemoryRecords() {
 
 export function saveMemoryRecords(records: MemoryRecord[]) {
   saveJson(STORAGE_KEYS.memories, records);
+}
+
+function isNonBlankString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isValidTimestamp(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+function isCognitiveFragment(value: unknown): value is CognitiveFragment {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const fragment = value as Record<string, unknown>;
+  const validSources = [
+    "ai_output",
+    "conversation",
+    "own_output",
+    "external_content",
+    "quick_note"
+  ];
+  const validStatuses = ["inbox", "reviewed", "dismissed"];
+  const validOrigins = ["self", "other_person", "ai_output", "external_content"];
+  const validStances = ["endorsed", "skeptical", "rejected", "undecided"];
+  const validCognitiveTypes = ["fact_claim", "value_judgment", "hypothesis", "question"];
+
+  const hasValidBaseFields =
+    isNonBlankString(fragment.id) &&
+    isNonBlankString(fragment.content) &&
+    typeof fragment.source === "string" &&
+    validSources.includes(fragment.source) &&
+    (fragment.sourceContext === null || typeof fragment.sourceContext === "string") &&
+    isValidTimestamp(fragment.capturedAt) &&
+    typeof fragment.status === "string" &&
+    validStatuses.includes(fragment.status) &&
+    typeof fragment.origin === "string" &&
+    validOrigins.includes(fragment.origin) &&
+    typeof fragment.cognitiveType === "string" &&
+    validCognitiveTypes.includes(fragment.cognitiveType);
+
+  if (!hasValidBaseFields) {
+    return false;
+  }
+
+  if (fragment.status === "reviewed") {
+    return (
+      typeof fragment.stance === "string" &&
+      validStances.includes(fragment.stance) &&
+      isValidTimestamp(fragment.reviewedAt) &&
+      isNonBlankString(fragment.linkedMemoryId)
+    );
+  }
+
+  return (
+    fragment.stance === null &&
+    fragment.reviewedAt === null &&
+    fragment.linkedMemoryId === null
+  );
+}
+
+export function loadCognitiveFragments(): CognitiveFragment[] {
+  if (typeof window === "undefined") {
+    return buildDemoCognitiveFragments();
+  }
+
+  const raw = window.localStorage.getItem(STORAGE_KEYS.cognitiveFragments);
+
+  if (raw === null) {
+    return buildDemoCognitiveFragments();
+  }
+
+  let stored: unknown;
+
+  try {
+    stored = JSON.parse(raw) as unknown;
+  } catch {
+    return [];
+  }
+
+  if (!Array.isArray(stored)) {
+    return [];
+  }
+
+  const seenIds = new Set<string>();
+
+  return stored.filter((value): value is CognitiveFragment => {
+    if (!isCognitiveFragment(value) || seenIds.has(value.id)) {
+      return false;
+    }
+
+    seenIds.add(value.id);
+    return true;
+  });
+}
+
+export function saveCognitiveFragments(fragments: CognitiveFragment[]) {
+  saveJson(STORAGE_KEYS.cognitiveFragments, fragments);
 }
 
 export function loadSelectedReplyOption() {

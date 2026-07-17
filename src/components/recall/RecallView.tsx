@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Clock, MessageSquareText, ShieldOff, XCircle } from "lucide-react";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
+import { isCognitiveMemoryRecord } from "@/lib/cognitive-loop";
 import { formatDate, peopleById, titleCase } from "@/lib/demo-data";
 import { loadMemoryRecords } from "@/lib/storage";
 import type { MemoryRecord } from "@/types";
@@ -32,12 +33,46 @@ function evaluateMemoryRecord(record: MemoryRecord, now: Date): RecallDecision {
     return { kind: "excluded", record, reason: "已忽略" };
   }
 
-  if (record.expiresAt && new Date(record.expiresAt) < now) {
-    return { kind: "excluded", record, reason: "已过期(TTL 到期)" };
+  if (record.status === "expired") {
+    return { kind: "excluded", record, reason: "已标记为过期" };
+  }
+
+  if (record.status === "pending_confirmation") {
+    return { kind: "excluded", record, reason: "等待确认，尚未生效" };
+  }
+
+  if (record.expiresAt) {
+    const expiresAtMs = Date.parse(record.expiresAt);
+
+    if (!Number.isFinite(expiresAtMs)) {
+      return { kind: "excluded", record, reason: "TTL 无效，已保守排除" };
+    }
+
+    if (expiresAtMs < now.getTime()) {
+      return { kind: "excluded", record, reason: "已过期(TTL 到期)" };
+    }
   }
 
   if (record.personId !== "self" && record.personId !== activePersonId) {
     return { kind: "excluded", record, reason: "作用域不匹配(属于其他联系人)" };
+  }
+
+  if (isCognitiveMemoryRecord(record)) {
+    if (record.stance === "rejected") {
+      return { kind: "excluded", record, reason: "已明确拒绝" };
+    }
+
+    if (record.stance === "skeptical") {
+      return { kind: "excluded", record, reason: "仍持怀疑态度" };
+    }
+
+    if (record.beliefStatus === "external_view") {
+      return { kind: "excluded", record, reason: "仅为外部参考，不代表你的观点" };
+    }
+
+    if (record.beliefStatus === "candidate_belief") {
+      return { kind: "excluded", record, reason: "候选信念，尚未再次确认" };
+    }
   }
 
   return { kind: "adopted", record };
