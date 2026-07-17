@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, BadgeCheck, Check, Clock, Pencil, Save, X } from "lucide-react";
 import { formatDate, peopleById, sourcesById, titleCase } from "@/lib/demo-data";
+import { getReaffirmationEligibility } from "@/lib/cognitive-loop";
 import type { MemoryRecord, MemoryStatus } from "@/types";
 import { EvidencePill } from "@/components/EvidencePill";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
@@ -41,12 +42,14 @@ export function MemoryRecordCard({
   record,
   onStatusChange,
   onEdit,
-  onReaffirm
+  onReaffirm,
+  now = new Date()
 }: {
   record: MemoryRecord;
   onStatusChange: (status: MemoryStatus) => void;
   onEdit: (content: string) => void;
   onReaffirm: () => void;
+  now?: Date;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(record.content);
@@ -60,6 +63,8 @@ export function MemoryRecordCard({
     .find((revision) => revision.to === "user_belief");
   const showInitialEndorsement =
     record.beliefStatus === "candidate_belief" && record.stance === "endorsed";
+  const reaffirmationEligibility = getReaffirmationEligibility(record, now);
+  const reaffirmationHintId = `reaffirmation-hint-${record.id}`;
 
   function saveDraft() {
     onEdit(draft);
@@ -124,7 +129,7 @@ export function MemoryRecordCard({
                 className="focus-ring mt-1 w-full rounded-md border border-slate-200 bg-white p-3 text-sm leading-6 text-slate-800"
               />
             ) : (
-              <p className="mt-1 rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-800">
+              <p className="mt-1 break-words rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
                 {record.content}
               </p>
             )}
@@ -132,7 +137,7 @@ export function MemoryRecordCard({
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">Evidence snippet</p>
-            <p className="mt-1 rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-700">
+            <p className="mt-1 break-words rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
               {record.evidence}
             </p>
           </div>
@@ -141,7 +146,7 @@ export function MemoryRecordCard({
         <dl className="grid gap-3 text-sm text-slate-700">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Source</dt>
-            <dd className="mt-1">{sourceNames}</dd>
+            <dd className="mt-1 min-w-0 break-words [overflow-wrap:anywhere]">{sourceNames}</dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Time to live</dt>
@@ -187,7 +192,9 @@ export function MemoryRecordCard({
                   <ArrowRight className="h-3.5 w-3.5 text-slate-400" aria-label="changed to" />
                   <span className="font-medium text-slate-800">{titleCase(revision.to)}</span>
                 </div>
-                <p className="mt-1 leading-6 text-slate-600">{revision.note}</p>
+                <p className="mt-1 break-words leading-6 text-slate-600 [overflow-wrap:anywhere]">
+                  {revision.note}
+                </p>
               </li>
             ))}
           </ol>
@@ -241,14 +248,25 @@ export function MemoryRecordCard({
           Expire
         </button>
         {record.beliefStatus === "candidate_belief" ? (
-          <button
-            type="button"
-            onClick={onReaffirm}
-            className="focus-ring inline-flex h-9 items-center gap-2 rounded-md border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
-          >
-            <BadgeCheck className="h-4 w-4" aria-hidden="true" />
-            Re-affirm as long-term view
-          </button>
+          <div className="min-w-0 max-w-full">
+            <button
+              type="button"
+              onClick={onReaffirm}
+              disabled={!reaffirmationEligibility.allowed}
+              aria-describedby={reaffirmationHintId}
+              className="focus-ring inline-flex min-h-11 max-w-full items-center gap-2 whitespace-normal rounded-md border border-indigo-200 bg-indigo-50 px-3 py-2 text-left text-sm font-medium leading-5 text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            >
+              <BadgeCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>Re-affirm as long-term view</span>
+            </button>
+            <p id={reaffirmationHintId} className="mt-1 max-w-sm text-xs leading-5 text-slate-500">
+              {reaffirmationEligibility.allowed
+                ? "Eligible now after the 24-hour reflection gap."
+                : reaffirmationEligibility.availableAt
+                  ? `Available ${formatTimestamp(reaffirmationEligibility.availableAt)} after the 24-hour reflection gap.`
+                  : "Unavailable because this record has no valid review time."}
+            </p>
+          </div>
         ) : null}
       </div>
     </article>

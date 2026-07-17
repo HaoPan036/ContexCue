@@ -11,6 +11,13 @@ import type {
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+export const MIN_REAFFIRMATION_GAP_MS = 24 * 60 * 60 * 1000;
+
+export interface ReaffirmationEligibility {
+  allowed: boolean;
+  availableAt: string | null;
+}
+
 export const FRAGMENT_SOURCE_LABELS: Record<FragmentSource, string> = {
   ai_output: "AI output",
   conversation: "Conversation",
@@ -113,6 +120,35 @@ function latestValidActivityMs(record: CognitiveMemoryRecord) {
     const timestampMs = Date.parse(timestamp);
     return Number.isFinite(timestampMs) && timestampMs > latest ? timestampMs : latest;
   }, Number.NEGATIVE_INFINITY);
+}
+
+export function getReaffirmationEligibility(
+  record: MemoryRecord,
+  now = new Date()
+): ReaffirmationEligibility {
+  if (record.beliefStatus !== "candidate_belief") {
+    return { allowed: false, availableAt: null };
+  }
+
+  const nowMs = now.getTime();
+  const revisionHistory = Array.isArray(record.revisionHistory)
+    ? record.revisionHistory
+    : [];
+  const validTimestamps = [record.createdAt, ...revisionHistory.map((revision) => revision.at)]
+    .map((timestamp) => Date.parse(timestamp))
+    .filter(Number.isFinite);
+
+  if (!Number.isFinite(nowMs) || validTimestamps.length === 0) {
+    return { allowed: false, availableAt: null };
+  }
+
+  const baselineMs = Math.max(...validTimestamps);
+  const availableAtMs = baselineMs + MIN_REAFFIRMATION_GAP_MS;
+
+  return {
+    allowed: nowMs >= availableAtMs,
+    availableAt: new Date(availableAtMs).toISOString()
+  };
 }
 
 function compareNewestActivity(

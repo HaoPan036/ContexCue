@@ -5,7 +5,8 @@ import {
   buildDemoCognitiveFragments,
   createMemoryRecordFromFragment,
   DEFAULT_ORIGIN_BY_SOURCE,
-  getDefaultCognitiveType
+  getDefaultCognitiveType,
+  getReaffirmationEligibility
 } from "@/lib/cognitive-loop";
 import type {
   AddCognitiveFragmentInput,
@@ -51,6 +52,7 @@ export function useDemoState() {
   const [feedbackEvent, setFeedbackEvent] = useState<FeedbackEvent | null>(null);
   const [styleProfile, setStyleProfile] = useState<UserStyleProfile>(demoData.styleProfileSeed);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [persistenceError, setPersistenceError] = useState<string | null>(null);
   const { cognitiveFragments, memoryRecords } = cognitiveState;
 
   useEffect(() => {
@@ -69,8 +71,15 @@ export function useDemoState() {
       return;
     }
 
-    saveMemoryRecords(memoryRecords);
-    saveCognitiveFragments(cognitiveFragments);
+    try {
+      saveMemoryRecords(memoryRecords);
+      saveCognitiveFragments(cognitiveFragments);
+      setPersistenceError(null);
+    } catch {
+      setPersistenceError(
+        "Changes remain in this tab and may be lost when you refresh or close it."
+      );
+    }
   }, [cognitiveFragments, hasLoaded, memoryRecords]);
 
   const updateMemoryStatus = useCallback((memoryId: string, status: MemoryStatus) => {
@@ -94,10 +103,18 @@ export function useDemoState() {
   }, []);
 
   const reaffirmMemory = useCallback((memoryId: string) => {
+    const now = new Date();
+
     setCognitiveState((current) => {
       let didReaffirm = false;
       const memoryRecords = current.memoryRecords.map((record) => {
-        if (record.id !== memoryId || record.beliefStatus !== "candidate_belief") {
+        if (record.id !== memoryId) {
+          return record;
+        }
+
+        const eligibility = getReaffirmationEligibility(record, now);
+
+        if (!eligibility.allowed) {
           return record;
         }
 
@@ -106,7 +123,7 @@ export function useDemoState() {
           stance: "endorsed",
           isReaffirmation: true
         });
-        const at = new Date().toISOString();
+        const at = now.toISOString();
         didReaffirm = true;
 
         return {
@@ -222,6 +239,7 @@ export function useDemoState() {
     setSelectedReplyOptionId(null);
     setFeedbackEvent(null);
     setStyleProfile(demoData.styleProfileSeed);
+    setPersistenceError(null);
   }, []);
 
   const selectedReplyOption = useMemo(
@@ -231,6 +249,7 @@ export function useDemoState() {
 
   return {
     hasLoaded,
+    persistenceError,
     memoryRecords,
     cognitiveFragments,
     selectedReplyOptionId,
