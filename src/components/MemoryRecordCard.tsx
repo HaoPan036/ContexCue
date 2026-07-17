@@ -1,20 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Clock, Pencil, Save, X } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Clock, Pencil, Save, X } from "lucide-react";
 import { formatDate, peopleById, sourcesById, titleCase } from "@/lib/demo-data";
+import { getReaffirmationEligibility } from "@/lib/cognitive-loop";
 import type { MemoryRecord, MemoryStatus } from "@/types";
 import { EvidencePill } from "@/components/EvidencePill";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 
+const timestampFormatter = new Intl.DateTimeFormat("en", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "UTC",
+  timeZoneName: "short"
+});
+
+function formatTimestamp(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : timestampFormatter.format(date);
+}
+
+function producerLabel(record: MemoryRecord, personName?: string) {
+  switch (record.origin) {
+    case "self":
+      return "You";
+    case "other_person":
+      return personName ?? "Other person";
+    case "ai_output":
+      return "AI output";
+    case "external_content":
+      return "External content";
+    default:
+      return "Not recorded";
+  }
+}
+
 export function MemoryRecordCard({
   record,
   onStatusChange,
-  onEdit
+  onEdit,
+  onReaffirm,
+  now = new Date()
 }: {
   record: MemoryRecord;
   onStatusChange: (status: MemoryStatus) => void;
   onEdit: (content: string) => void;
+  onReaffirm: () => void;
+  now?: Date;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(record.content);
@@ -22,6 +57,14 @@ export function MemoryRecordCard({
   const sourceNames = record.sourceSnippetIds
     .map((sourceId) => sourcesById.get(sourceId)?.title ?? sourceId)
     .join(", ");
+  const revisionHistory = record.revisionHistory ?? [];
+  const reaffirmationRevision = [...revisionHistory]
+    .reverse()
+    .find((revision) => revision.to === "user_belief");
+  const showInitialEndorsement =
+    record.beliefStatus === "candidate_belief" && record.stance === "endorsed";
+  const reaffirmationEligibility = getReaffirmationEligibility(record, now);
+  const reaffirmationHintId = `reaffirmation-hint-${record.id}`;
 
   function saveDraft() {
     onEdit(draft);
@@ -40,7 +83,38 @@ export function MemoryRecordCard({
         <div className="flex flex-wrap gap-2">
           <PrivacyBadge value={record.privacyLevel} />
           <PrivacyBadge value={record.status} />
+          <PrivacyBadge
+            value={record.origin}
+            label={`Origin: ${record.origin ? titleCase(record.origin) : "Not recorded"}`}
+          />
+          <PrivacyBadge
+            value={record.stance}
+            label={`Stance: ${record.stance ? titleCase(record.stance) : "Not recorded"}`}
+          />
+          <PrivacyBadge
+            value={record.beliefStatus}
+            label={`Belief status: ${record.beliefStatus ? titleCase(record.beliefStatus) : "Not recorded"}`}
+          />
         </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+        <span>
+          Produced by <strong className="font-semibold text-slate-800">{producerLabel(record, person?.displayName)}</strong>
+        </span>
+        <span>
+          Captured <time dateTime={record.createdAt}>{formatTimestamp(record.createdAt)}</time>
+        </span>
+        {showInitialEndorsement ? (
+          <span>
+            Endorsed <time dateTime={record.createdAt}>{formatTimestamp(record.createdAt)}</time>
+          </span>
+        ) : null}
+        {reaffirmationRevision ? (
+          <span>
+            Re-affirmed <time dateTime={reaffirmationRevision.at}>{formatTimestamp(reaffirmationRevision.at)}</time>
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
@@ -55,7 +129,7 @@ export function MemoryRecordCard({
                 className="focus-ring mt-1 w-full rounded-md border border-slate-200 bg-white p-3 text-sm leading-6 text-slate-800"
               />
             ) : (
-              <p className="mt-1 rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-800">
+              <p className="mt-1 break-words rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
                 {record.content}
               </p>
             )}
@@ -63,7 +137,7 @@ export function MemoryRecordCard({
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">Evidence snippet</p>
-            <p className="mt-1 rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-700">
+            <p className="mt-1 break-words rounded-md border border-slate-100 bg-slate-50 p-3 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
               {record.evidence}
             </p>
           </div>
@@ -72,7 +146,7 @@ export function MemoryRecordCard({
         <dl className="grid gap-3 text-sm text-slate-700">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Source</dt>
-            <dd className="mt-1">{sourceNames}</dd>
+            <dd className="mt-1 min-w-0 break-words [overflow-wrap:anywhere]">{sourceNames}</dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-normal text-slate-500">Time to live</dt>
@@ -98,6 +172,36 @@ export function MemoryRecordCard({
           </div>
         </dl>
       </div>
+
+      <section className="mt-4 border-t border-slate-100 pt-4" aria-labelledby={`revision-chain-${record.id}`}>
+        <h4
+          id={`revision-chain-${record.id}`}
+          className="text-xs font-semibold uppercase tracking-normal text-slate-500"
+        >
+          Revision chain
+        </h4>
+        {revisionHistory.length ? (
+          <ol className="mt-2 space-y-3">
+            {revisionHistory.map((revision, index) => (
+              <li key={`${revision.at}-${index}`} className="border-l-2 border-slate-200 pl-3 text-sm text-slate-700">
+                <div className="flex flex-wrap items-center gap-2">
+                  <time dateTime={revision.at} className="text-xs text-slate-500">
+                    {formatTimestamp(revision.at)}
+                  </time>
+                  <span className="font-medium text-slate-800">{titleCase(revision.from)}</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-slate-400" aria-label="changed to" />
+                  <span className="font-medium text-slate-800">{titleCase(revision.to)}</span>
+                </div>
+                <p className="mt-1 break-words leading-6 text-slate-600 [overflow-wrap:anywhere]">
+                  {revision.note}
+                </p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="mt-2 text-sm text-slate-500">No revisions recorded.</p>
+        )}
+      </section>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {isEditing ? (
@@ -143,6 +247,27 @@ export function MemoryRecordCard({
           <Clock className="h-4 w-4" aria-hidden="true" />
           Expire
         </button>
+        {record.beliefStatus === "candidate_belief" ? (
+          <div className="min-w-0 max-w-full">
+            <button
+              type="button"
+              onClick={onReaffirm}
+              disabled={!reaffirmationEligibility.allowed}
+              aria-describedby={reaffirmationHintId}
+              className="focus-ring inline-flex min-h-11 max-w-full items-center gap-2 whitespace-normal rounded-md border border-indigo-200 bg-indigo-50 px-3 py-2 text-left text-sm font-medium leading-5 text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            >
+              <BadgeCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>Re-affirm as long-term view</span>
+            </button>
+            <p id={reaffirmationHintId} className="mt-1 max-w-sm text-xs leading-5 text-slate-500">
+              {reaffirmationEligibility.allowed
+                ? "Eligible now after the 24-hour reflection gap."
+                : reaffirmationEligibility.availableAt
+                  ? `Available ${formatTimestamp(reaffirmationEligibility.availableAt)} after the 24-hour reflection gap.`
+                  : "Unavailable because this record has no valid review time."}
+            </p>
+          </div>
+        ) : null}
       </div>
     </article>
   );

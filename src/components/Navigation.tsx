@@ -23,7 +23,7 @@ export function Navigation() {
   }
 
   return (
-    <header className="sticky top-0 z-40 h-16 border-b border-black/5 bg-[#f5f2ec]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 h-16 overflow-x-clip border-b border-black/5 bg-[#f5f2ec]/85 backdrop-blur-xl">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="focus-ring w-fit rounded-md text-sm font-semibold tracking-normal text-[#111111]">
           ContextCue
