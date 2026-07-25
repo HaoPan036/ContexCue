@@ -1,5 +1,5 @@
-import { CrossAppDemo } from "@/components/cross-app/CrossAppDemo";
+import { ContinuityDemo } from "@/components/continuity/ContinuityDemo";
 
 export default function HomePage() {
-  return <CrossAppDemo />;
+  return <ContinuityDemo />;
 }
